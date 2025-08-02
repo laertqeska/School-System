@@ -1,0 +1,10 @@
+CREATE TABLE faculties(
+    id BIGINT GENERATED ALWAYS as IDENTITY,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50),
+    dean_id BIGINT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE
+    FOREIGN KEY (dean_id) REFERENCES users(id) ON DELETE SET NULL
+);
