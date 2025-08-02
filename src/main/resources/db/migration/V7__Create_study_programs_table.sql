@@ -1,0 +1,11 @@
+CREATE TABLE study_programs(
+    id BIGINT GENERATED ALWAYS as IDENTITY,
+    department_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    degree_level ENUM('BACHELOR','MASTER','DOCTORATE') NOT NULL,
+    duration_semesters INTEGER NOT NULL,
+    total_credits INTEGER NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE CASCADE
+);

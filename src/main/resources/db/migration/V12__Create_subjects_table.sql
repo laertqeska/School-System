@@ -1,0 +1,10 @@
+CREATE TABLE subjects(
+    id BIGINT GENERATED ALWAYS as IDENTITY,
+    school_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50),
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE
+);
