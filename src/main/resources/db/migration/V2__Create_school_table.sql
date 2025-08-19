@@ -1,6 +1,6 @@
 -- Schools table
 CREATE TABLE schools (
-    id BIGINT GENERATED ALWAYS AS IDENTITY,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     university_type ENUM('PUBLIC','PRIVATE') NOT NULL,
     license_number VARCHAR(100), -- MASH license number
@@ -16,6 +16,6 @@ CREATE TABLE schools (
     created_by BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES users(id)
+    FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (rector_id) REFERENCES users(id) ON DELETE SET NULL
 );
