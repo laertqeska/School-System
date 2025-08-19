@@ -8,8 +8,13 @@ CREATE TABLE study_program_subjects (
     prerequisites JSON,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (study_program_id) REFERENCES study_programs(id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_program_subject (study_program_id, subject_id)
+    CONSTRAINT unique_program_subject UNIQUE (study_program_id, subject_id)
 );
+
+CREATE TRIGGER set_updated_at_study_program_subjects
+BEFORE UPDATE ON school_admins
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
