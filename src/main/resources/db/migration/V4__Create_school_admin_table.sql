@@ -3,7 +3,12 @@ CREATE TABLE school_admins(
     user_id BIGINT UNIQUE NOT NULL,
     school_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE
 );
+
+CREATE TRIGGER set_updated_at_school_admins
+BEFORE UPDATE ON school_admins
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
