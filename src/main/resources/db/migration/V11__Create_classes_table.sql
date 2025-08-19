@@ -8,6 +8,6 @@ CREATE TABLE classes(
     max_students INTEGER DEFAULT 30,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE,
+    FOREIGN KEY (study_program_id) REFERENCES study_programs(id) ON DELETE CASCADE
     FOREIGN KEY (academic_year_id) REFERENCES academic_years(id) ON DELETE CASCADE
 );
