@@ -2,46 +2,63 @@ package com.example.School_System.entities;
 
 import com.example.School_System.entities.valueObjects.UserType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.security.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @Column(nullable = false,length = 100)
-    String username;
-    @Column(nullable = false)
-    String email;
-    @Column(name = "password_hash",nullable = false)
-    String passwordHash;
-    @Column(name = "first_name",nullable = false)
-    String firstName;
-    @Column(name = "last_name",nullable = false)
-    String lastName;
+    private Long id;
+
+    @Column(nullable = false, length = 100, unique = true)
+    private String username;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
+
     @Column(length = 20)
-    String phone;
+    private String phone;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_type")
+    @Column(name = "user_type", nullable = false)
     private UserType userType;
 
-    @Column(name = "school_id")
-    private Long schoolId;
-
     @Column(name = "is_active")
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     @Column(name = "email_verified")
-    private Boolean emailVerified;
+    private Boolean emailVerified = false;
 
-    @Column(name = "created_at")
-    private Timestamp createdAt;
-
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
     @Column(name = "updated_at")
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
+
+    public User(String username, String email, String passwordHash,
+                String firstName, String lastName, UserType userType) {
+        this.username = username;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userType = userType;
+    }
 
     public Long getId() {
         return id;
@@ -75,11 +92,7 @@ public class User {
         return userType;
     }
 
-    public Long getSchoolId() {
-        return schoolId;
-    }
-
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
@@ -87,11 +100,11 @@ public class User {
         return emailVerified;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
@@ -123,19 +136,11 @@ public class User {
         this.userType = userType;
     }
 
-    public void setSchoolId(Long schoolId) {
-        this.schoolId = schoolId;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
 
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
