@@ -1,0 +1,16 @@
+CREATE TABLE subjects(
+    id BIGINT GENERATED ALWAYS as IDENTITY PRIMARY KEY,
+    school_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50),
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE
+);
+
+CREATE TRIGGER set_updated_at_subjects
+BEFORE UPDATE ON subjects
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

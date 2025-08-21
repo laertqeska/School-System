@@ -1,0 +1,17 @@
+CREATE TABLE faculties(
+    id BIGINT GENERATED ALWAYS as IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50),
+    school_id BIGINT NOT NULL,
+    dean_id BIGINT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE,
+    FOREIGN KEY (dean_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TRIGGER set_updated_at_faculties
+BEFORE UPDATE ON faculties
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
