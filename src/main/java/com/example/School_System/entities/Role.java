@@ -1,0 +1,32 @@
+package com.example.School_System.entities;
+
+import com.example.School_System.entities.valueObjects.RoleName;
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "roles")
+public class Role {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private RoleName name;
+
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users = new HashSet<>();
+
+    public Role() {}
+
+    public Role(RoleName name) {
+        this.name = name;
+    }
+
+    public Long getId() { return id; }
+    public RoleName getName() { return name; }
+    public void setName(RoleName name) { this.name = name; }
+    public Set<User> getUsers() { return users; }
+}
