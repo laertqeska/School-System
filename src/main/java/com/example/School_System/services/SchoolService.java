@@ -6,13 +6,14 @@ import com.example.School_System.entities.School;
 import com.example.School_System.entities.User;
 import com.example.School_System.repositories.SchoolRepository;
 import com.example.School_System.repositories.UserRepository;
-import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,10 +24,28 @@ public class SchoolService {
     @Autowired
     private UserRepository userRepository;
 
-    public Page<PaginatedSchoolModel> listSchools(int page,int perPage){
+    public PaginatedSchoolResponse listSchools(int page, int perPage){
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<School> schoolPage =  schoolRepository.findAll(pageable);
-        return
+        Page<School> schoolPage = schoolRepository.findAll(pageable);
+        List<SchoolModel> response = new ArrayList<>();
+        for(School school : schoolPage.getContent()){
+            SchoolModel schoolModel = new SchoolModel(
+                    school.getId(),
+                    school.getName(),
+                    school.getCity(),
+                    school.getPhone(),
+                    school.getEmail()
+            );
+            response.add(schoolModel);
+        }
+        PaginatedSchoolResponse paginatedResponse = new PaginatedSchoolResponse(
+                response,
+                page,
+                perPage,
+                schoolPage.getTotalElements(),
+                schoolPage.getTotalPages()
+        );
+        return paginatedResponse;
     }
 
     public Long createSchool(CreateSchoolRequest request, User createdBy) throws RuntimeException{
