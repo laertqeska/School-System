@@ -1,11 +1,14 @@
 package com.example.School_System.controllers;
 
 import com.example.School_System.dto.CreateSchoolRequest;
+import com.example.School_System.dto.PaginatedSchoolResponse;
 import com.example.School_System.dto.SchoolDetailsResponse;
 import com.example.School_System.dto.UpdateSchoolRequest;
+import com.example.School_System.entities.School;
 import com.example.School_System.entities.User;
 import com.example.School_System.services.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,8 +24,9 @@ public class SchoolController {
     private SchoolService schoolService;
 
     @GetMapping
-    public ResponseEntity<List<SchoolDetailsResponse>> getAllSchools(){
-        schoolService.listSchools();
+    public ResponseEntity<PaginatedSchoolResponse> getAllSchools(@RequestParam int page, @RequestParam int perPage){
+        PaginatedSchoolResponse response =  schoolService.listSchools(page,perPage);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @PostMapping("/create")
