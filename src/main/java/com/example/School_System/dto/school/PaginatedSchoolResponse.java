@@ -1,4 +1,4 @@
-package com.example.School_System.dto;
+package com.example.School_System.dto.school;
 
 import java.util.List;
 

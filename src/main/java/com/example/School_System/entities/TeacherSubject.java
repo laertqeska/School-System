@@ -34,6 +34,8 @@ public class TeacherSubject {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public TeacherSubject() {
+    }
 
     public TeacherSubject(Long teacherId, Long subjectId, Long classId, Long academicYearId) {
         this.teacherId = teacherId;

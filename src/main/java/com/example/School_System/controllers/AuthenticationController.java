@@ -1,8 +1,8 @@
 package com.example.School_System.controllers;
 
-import com.example.School_System.dto.AuthenticationRequest;
-import com.example.School_System.dto.AuthenticationResponse;
-import com.example.School_System.dto.RegisterRequest;
+import com.example.School_System.dto.authentication.AuthenticationRequest;
+import com.example.School_System.dto.authentication.AuthenticationResponse;
+import com.example.School_System.dto.authentication.RegisterRequest;
 import com.example.School_System.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +17,27 @@ public class AuthenticationController {
     //This endpoint is currently for testing purposes
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
-        return ResponseEntity.ok(authenticationService.register(request));
+        return ResponseEntity.ok(authenticationService.registerSuperAdmin(request));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    @PostMapping("/login/student")
+    public ResponseEntity<AuthenticationResponse> authenticateStudent(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authenticationService.authenticateStudent(request));
+    }
+
+    @PostMapping("/login/teacher")
+    public ResponseEntity<AuthenticationResponse> authenticateTeacher(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authenticationService.authenticateTeacher(request));
+    }
+
+    @PostMapping("/login/school-admin")
+    public ResponseEntity<AuthenticationResponse> authenticateSchoolAdmin(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authenticationService.authenticateSchoolAdmin(request));
+    }
+
+    @PostMapping("/login/super-admin")
+    public ResponseEntity<AuthenticationResponse> authenticateSuperAdmin(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authenticationService.authenticateSuperAdmin(request));
     }
 
     @PostMapping("/refresh-token")

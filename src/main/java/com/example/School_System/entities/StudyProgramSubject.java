@@ -14,11 +14,15 @@ public class StudyProgramSubject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "study_program_id", nullable = false)
-    private Long studyProgramId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_program_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_study_program_subjects_program"))
+    private StudyProgram studyProgram;
 
-    @Column(name = "subject_id", nullable = false)
-    private Long subjectId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_study_program_subjects_subject"))
+    private Subject subject;
 
     @Column(nullable = false)
     private Integer credits;
@@ -43,9 +47,9 @@ public class StudyProgramSubject {
     private LocalDateTime updatedAt;
 
 
-    public StudyProgramSubject(Long studyProgramId, Long subjectId, Integer credits, Integer semester, Integer yearLevel, String prerequisites, Boolean isActive) {
-        this.studyProgramId = studyProgramId;
-        this.subjectId = subjectId;
+    public StudyProgramSubject(StudyProgram studyProgram, Subject subject, Integer credits, Integer semester, Integer yearLevel, String prerequisites, Boolean isActive) {
+        this.studyProgram = studyProgram;
+        this.subject = subject;
         this.credits = credits;
         this.semester = semester;
         this.yearLevel = yearLevel;
@@ -54,8 +58,12 @@ public class StudyProgramSubject {
     }
 
     public Long getId() { return id; }
-    public Long getStudyProgramId() { return studyProgramId; }
-    public Long getSubjectId() { return subjectId; }
+    public StudyProgram getStudyProgram() { return studyProgram; }
+    public Subject getSubject() { return subject; }
+
+    public StudyProgramSubject() {
+    }
+
     public Integer getCredits() { return credits; }
     public Integer getSemester() { return semester; }
     public Integer getYearLevel() { return yearLevel; }
@@ -64,8 +72,8 @@ public class StudyProgramSubject {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
-    public void setSubjectId(Long subjectId) { this.subjectId = subjectId; }
+    public void setStudyProgram(StudyProgram studyProgram) { this.studyProgram = studyProgram; }
+    public void setSubject(Subject subject) { this.subject = subject; }
     public void setCredits(Integer credits) { this.credits = credits; }
     public void setSemester(Integer semester) { this.semester = semester; }
     public void setYearLevel(Integer yearLevel) { this.yearLevel = yearLevel; }

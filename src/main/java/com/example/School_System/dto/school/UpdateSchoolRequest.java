@@ -1,11 +1,11 @@
-package com.example.School_System.dto;
+package com.example.School_System.dto.school;
 
-import com.example.School_System.entities.valueObjects.UniversityType;
+import com.example.School_System.entities.valueObjects.SchoolType;
 
 public class UpdateSchoolRequest {
 
     private String name;
-    private UniversityType universityType;
+    private SchoolType schoolType;
     private String licenseNumber;
     private Long rectorId;
     private String address;
@@ -17,12 +17,13 @@ public class UpdateSchoolRequest {
     private Integer establishmentYear;
     private Boolean isActive;
 
-    // ---- Getters & Setters ----
+    public UpdateSchoolRequest() {}
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public UniversityType getUniversityType() { return universityType; }
-    public void setUniversityType(UniversityType universityType) { this.universityType = universityType; }
+    public SchoolType getUniversityType() { return schoolType; }
+    public void setUniversityType(SchoolType schoolType) { this.schoolType = schoolType; }
 
     public String getLicenseNumber() { return licenseNumber; }
     public void setLicenseNumber(String licenseNumber) { this.licenseNumber = licenseNumber; }

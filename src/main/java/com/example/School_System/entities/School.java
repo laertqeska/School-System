@@ -1,11 +1,13 @@
 package com.example.School_System.entities;
 
-import com.example.School_System.entities.valueObjects.UniversityType;
+import com.example.School_System.entities.valueObjects.SchoolType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "schools")
@@ -20,12 +22,12 @@ public class School {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "university_type", nullable = false)
-    private UniversityType universityType;
+    private SchoolType schoolType;
 
     @Column(name = "license_number", length = 100)
     private String licenseNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rector_id", foreignKey = @ForeignKey(name = "schools_rector_id_fkey"))
     private User rector;
 
@@ -54,7 +56,7 @@ public class School {
     private Boolean isActive = true;
 
     @ManyToOne
-    @JoinColumn(name = "created_by", foreignKey = @ForeignKey(name = "schools_created_by_fkey"))
+    @JoinColumn(name = "created_by", foreignKey = @ForeignKey(name = "fk_schools_created_by"))
     private User createdBy;
 
     @CreationTimestamp
@@ -65,12 +67,27 @@ public class School {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "school",fetch = FetchType.LAZY)
+    private Set<AcademicYear> academicYears = new HashSet<>();
+
+    @OneToMany(mappedBy = "school",fetch = FetchType.LAZY)
+    private Set<Faculty> faculties = new HashSet<>();
+
+    @OneToMany(mappedBy = "school", fetch = FetchType.LAZY)
+    private Set<Student> students = new HashSet<>();
+
+    @OneToMany(mappedBy = "school", fetch = FetchType.LAZY)
+    private Set<Teacher> teachers = new HashSet<>();
+
+    @OneToOne(mappedBy = "school", fetch = FetchType.LAZY)
+    private SchoolAdmin schoolAdmin;
+
 
     public School() {}
 
     public School(
             String name,
-            UniversityType universityType,
+            SchoolType schoolType,
             String licenseNumber,
             User rector,
             String address,
@@ -84,7 +101,7 @@ public class School {
             User createdBy
     ) {
         this.name = name;
-        this.universityType = universityType;
+        this.schoolType = schoolType;
         this.licenseNumber = licenseNumber;
         this.rector = rector;
         this.address = address;
@@ -104,8 +121,8 @@ public class School {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public UniversityType getUniversityType() { return universityType; }
-    public void setUniversityType(UniversityType universityType) { this.universityType = universityType; }
+    public SchoolType getSchoolType() { return schoolType; }
+    public void setSchoolType(SchoolType schoolType) { this.schoolType = schoolType; }
 
     public String getLicenseNumber() { return licenseNumber; }
     public void setLicenseNumber(String licenseNumber) { this.licenseNumber = licenseNumber; }

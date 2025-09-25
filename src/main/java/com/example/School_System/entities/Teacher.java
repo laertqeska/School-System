@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "teachers")
@@ -14,14 +16,21 @@ public class Teacher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_teacher_user"))
+    private User user;
 
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "school_id", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_teachers_schools")
+    )
+    private School school;
 
-    @Column(name = "department_id")
-    private Long departmentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id",
+            foreignKey = @ForeignKey(name = "fk_teachers_department"))
+    private Department department;
 
     @Column(name = "employee_id", length = 50, unique = true)
     private String employeeId;
@@ -42,10 +51,22 @@ public class Teacher {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Teacher(Long userId, Long schoolId, Long departmentId, String employeeId, AcademicTitle academicTitle, String qualification, Boolean isActive) {
-        this.userId = userId;
-        this.schoolId = schoolId;
-        this.departmentId = departmentId;
+    @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY)
+    private Set<Grade> grades = new HashSet<>();
+
+    @OneToMany(mappedBy = "teacherId",fetch = FetchType.LAZY)
+    private Set<TeacherSubject> teacherSubjects = new HashSet<>();
+
+    @OneToOne(mappedBy = "departmentHead", fetch = FetchType.LAZY)
+    private Department headOfDepartment;
+
+    public Teacher() {
+    }
+
+    public Teacher(User user, School school, Department department, String employeeId, AcademicTitle academicTitle, String qualification, Boolean isActive) {
+        this.user = user;
+        this.school = school;
+        this.department = department;
         this.employeeId = employeeId;
         this.academicTitle = academicTitle;
         this.qualification = qualification;
@@ -53,9 +74,9 @@ public class Teacher {
     }
 
     public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public Long getSchoolId() { return schoolId; }
-    public Long getDepartmentId() { return departmentId; }
+    public User getUser() { return user; }
+    public School getSchool() { return school; }
+    public Department getDepartment() { return department; }
     public String getEmployeeId() { return employeeId; }
     public AcademicTitle getAcademicTitle() { return academicTitle; }
     public String getQualification() { return qualification; }
@@ -63,9 +84,33 @@ public class Teacher {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setUserId(Long userId) { this.userId = userId; }
-    public void setSchoolId(Long schoolId) { this.schoolId = schoolId; }
-    public void setDepartmentId(Long departmentId) { this.departmentId = departmentId; }
+    public Set<Grade> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(Set<Grade> grades) {
+        this.grades = grades;
+    }
+
+    public Set<TeacherSubject> getTeacherSubjects() {
+        return teacherSubjects;
+    }
+
+    public void setTeacherSubjects(Set<TeacherSubject> teacherSubjects) {
+        this.teacherSubjects = teacherSubjects;
+    }
+
+    public Department getHeadOfDepartment() {
+        return headOfDepartment;
+    }
+
+    public void setHeadOfDepartment(Department headOfDepartment) {
+        this.headOfDepartment = headOfDepartment;
+    }
+
+    public void setUser(User user) { this.user = user; }
+    public void setSchool(School school) { this.school = school; }
+    public void setDepartment(Department department) { this.department = department; }
     public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
     public void setAcademicTitle(AcademicTitle academicTitle) { this.academicTitle = academicTitle; }
     public void setQualification(String qualification) { this.qualification = qualification; }

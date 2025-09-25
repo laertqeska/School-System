@@ -1,4 +1,4 @@
-package com.example.School_System.dto;
+package com.example.School_System.dto.authentication;
 
 public class RegisterRequest {
     private String username;

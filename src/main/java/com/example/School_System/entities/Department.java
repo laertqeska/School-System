@@ -2,10 +2,13 @@ package com.example.School_System.entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "departments")
@@ -14,14 +17,20 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "faculty_id", nullable = false)
-    private Long facultyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "faculty_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_departments_faculty")
+    )
+    private Faculty faculty;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "department_head_id")
-    private Long departmentHeadId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_head_id",nullable = false,
+        foreignKey = @ForeignKey(name = "fk_department_head")
+    )
+    private Teacher departmentHead;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -33,22 +42,29 @@ public class Department {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "department",fetch = FetchType.LAZY)
+    private Set<StudyProgram> studyPrograms = new HashSet<>();
 
-    public Department(Long facultyId, String name) {
-        this.facultyId = facultyId;
+    @OneToMany(mappedBy = "department",fetch = FetchType.LAZY)
+    private Set<Teacher> teachers = new HashSet<>();
+
+    public Department(){}
+
+    public Department(Faculty faculty, String name) {
+        this.faculty = faculty;
         this.name = name;
     }
 
     public Long getId() { return id; }
-    public Long getFacultyId() { return facultyId; }
+    public Faculty getFaculty() { return faculty; }
     public String getName() { return name; }
-    public Long getDepartmentHeadId() { return departmentHeadId; }
+    public Teacher getDepartmentHead() { return departmentHead; }
     public Boolean getIsActive() { return isActive; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setFacultyId(Long facultyId) { this.facultyId = facultyId; }
+    public void setFaculty(Faculty faculty) { this.faculty = faculty; }
     public void setName(String name) { this.name = name; }
-    public void setDepartmentHeadId(Long departmentHeadId) { this.departmentHeadId = departmentHeadId; }
+    public void setDepartmentHead(Teacher departmentHead) { this.departmentHead = departmentHead; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 }

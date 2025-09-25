@@ -59,6 +59,24 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Student student;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Teacher teacher;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private SchoolAdmin schoolAdmin;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private SuperAdmin superAdmin;
+
+    @OneToMany(mappedBy = "rector", fetch = FetchType.LAZY)
+    private Set<School> rectorOfSchools = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<School> createdSchools = new HashSet<>();
+
     public User(){}
 
     public User(String username, String email, String passwordHash, String firstName, String lastName) {

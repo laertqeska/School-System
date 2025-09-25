@@ -1,6 +1,6 @@
 package com.example.School_System.entities.valueObjects;
 
-public enum UniversityType {
+public enum SchoolType {
     PUBLIC,
     PRIVATE
 }
