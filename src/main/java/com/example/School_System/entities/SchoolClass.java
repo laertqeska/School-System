@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "classes")
@@ -13,11 +15,15 @@ public class SchoolClass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "study_program_id", nullable = false)
-    private Long studyProgramId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_program_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_classes_study_program"))
+    private StudyProgram studyProgram;
 
-    @Column(name = "academic_year_id", nullable = false)
-    private Long academicYearId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "academic_year_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_classes_academic_year"))
+    private AcademicYear academicYear;
 
     @Column(nullable = false, length = 50)
     private String name;
@@ -35,9 +41,18 @@ public class SchoolClass {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public SchoolClass(Long studyProgramId,Long academicYearId,String name,Integer yearLevel, Integer maxStudents) {
-        this.studyProgramId = studyProgramId;
-        this.academicYearId = academicYearId;
+    @OneToMany(mappedBy = "schoolClass", fetch = FetchType.LAZY)
+    private Set<Grade> grades = new HashSet<>();
+
+    @OneToMany(mappedBy = "classId", fetch = FetchType.LAZY)
+    private Set<TeacherSubject> teacherSubjects = new HashSet<>();
+
+    public SchoolClass() {
+    }
+
+    public SchoolClass(StudyProgram studyProgram, AcademicYear academicYear, String name, Integer yearLevel, Integer maxStudents) {
+        this.studyProgram = studyProgram;
+        this.academicYear = academicYear;
         this.name = name;
         this.yearLevel = yearLevel;
         this.maxStudents = maxStudents;
@@ -45,16 +60,16 @@ public class SchoolClass {
     }
 
     public Long getId() { return id; }
-    public Long getStudyProgramId() { return studyProgramId; }
-    public Long getAcademicYearId() { return academicYearId; }
+    public StudyProgram getStudyProgram() { return studyProgram; }
+    public AcademicYear getAcademicYear() { return academicYear; }
     public String getName() { return name; }
     public Integer getYearLevel() { return yearLevel; }
     public Integer getMaxStudents() { return maxStudents; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
-    public void setAcademicYearId(Long academicYearId) { this.academicYearId = academicYearId; }
+    public void setStudyProgram(StudyProgram studyProgram) { this.studyProgram = studyProgram; }
+    public void setAcademicYear(AcademicYear academicYear) { this.academicYear = academicYear; }
     public void setName(String name) { this.name = name; }
     public void setYearLevel(Integer yearLevel) { this.yearLevel = yearLevel; }
     public void setMaxStudents(Integer maxStudents) { this.maxStudents = maxStudents; }

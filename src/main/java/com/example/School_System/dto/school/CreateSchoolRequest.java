@@ -1,11 +1,11 @@
-package com.example.School_System.dto;
+package com.example.School_System.dto.school;
 
-import com.example.School_System.entities.valueObjects.UniversityType;
+import com.example.School_System.entities.valueObjects.SchoolType;
 
 public class CreateSchoolRequest {
     private String name;
     private String code;
-    private UniversityType universityType;
+    private SchoolType schoolType;
     private String address;
     private String city;
     private String phone;
@@ -33,8 +33,8 @@ public class CreateSchoolRequest {
         this.code = code;
     }
 
-    public UniversityType getUniversityType() {
-        return universityType;
+    public SchoolType getSchoolType() {
+        return schoolType;
     }
 
     public String getCity() {
@@ -45,8 +45,8 @@ public class CreateSchoolRequest {
         this.city = city;
     }
 
-    public void setUniversityType(UniversityType universityType) {
-        this.universityType = universityType;
+    public void setSchoolType(SchoolType schoolType) {
+        this.schoolType = schoolType;
     }
 
     public String getAddress() {

@@ -15,6 +15,6 @@ CREATE TABLE study_program_subjects (
 );
 
 CREATE TRIGGER set_updated_at_study_program_subjects
-BEFORE UPDATE ON school_admins
+BEFORE UPDATE ON study_program_subjects
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();

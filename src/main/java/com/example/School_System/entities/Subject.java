@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "subjects")
@@ -13,8 +15,11 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "school_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_subjects_school"))
+    private School school;
 
     @Column(nullable = false)
     private String name;
@@ -35,9 +40,21 @@ public class Subject {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
+    private Set<Grade> grades = new HashSet<>();
 
-    public Subject(Long schoolId, String name, String code, String description, Boolean isActive) {
-        this.schoolId = schoolId;
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
+    private Set<StudyProgramSubject> studyProgramSubjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "subjectId", fetch = FetchType.LAZY)
+    private Set<TeacherSubject> teacherSubjects = new HashSet<>();
+
+    public Subject() {
+    }
+
+
+    public Subject(School school, String name, String code, String description, Boolean isActive) {
+        this.school = school;
         this.name = name;
         this.code = code;
         this.description = description;
@@ -45,7 +62,7 @@ public class Subject {
     }
 
     public Long getId() { return id; }
-    public Long getSchoolId() { return schoolId; }
+    public School getSchool() { return school; }
     public String getName() { return name; }
     public String getCode() { return code; }
     public String getDescription() { return description; }
@@ -53,7 +70,7 @@ public class Subject {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setSchoolId(Long schoolId) { this.schoolId = schoolId; }
+    public void setSchool(School school) { this.school = school; }
     public void setName(String name) { this.name = name; }
     public void setCode(String code) { this.code = code; }
     public void setDescription(String description) { this.description = description; }

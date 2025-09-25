@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "study_programs")
@@ -14,8 +16,11 @@ public class StudyProgram {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "department_id", nullable = false)
-    private Long departmentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_study_programs_department")
+    )
+    private Department department;
 
     @Column(nullable = false)
     private String name;
@@ -40,10 +45,21 @@ public class StudyProgram {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "studyProgram", fetch = FetchType.LAZY)
+    private Set<Student> students = new HashSet<>();
 
-    public StudyProgram(Long departmentId, String name, DegreeLevel degreeLevel,
+    @OneToMany(mappedBy = "studyProgram", fetch = FetchType.LAZY)
+    private Set<StudyProgramSubject> subjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "studyProgram", fetch = FetchType.LAZY)
+    private Set<SchoolClass> classes = new HashSet<>();
+
+    public StudyProgram() {
+    }
+
+    public StudyProgram(Department department, String name, DegreeLevel degreeLevel,
                         Integer durationSemesters, Integer totalCredits) {
-        this.departmentId = departmentId;
+        this.department = department;
         this.name = name;
         this.degreeLevel = degreeLevel;
         this.durationSemesters = durationSemesters;
@@ -51,7 +67,7 @@ public class StudyProgram {
     }
 
     public Long getId() { return id; }
-    public Long getDepartmentId() { return departmentId; }
+    public Department getDepartment() { return department; }
     public String getName() { return name; }
     public DegreeLevel getDegreeLevel() { return degreeLevel; }
     public Integer getDurationSemesters() { return durationSemesters; }
@@ -60,7 +76,7 @@ public class StudyProgram {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setDepartmentId(Long departmentId) { this.departmentId = departmentId; }
+    public void setDepartment(Department department) { this.department = department; }
     public void setName(String name) { this.name = name; }
     public void setDegreeLevel(DegreeLevel degreeLevel) { this.degreeLevel = degreeLevel; }
     public void setDurationSemesters(Integer durationSemesters) { this.durationSemesters = durationSemesters; }

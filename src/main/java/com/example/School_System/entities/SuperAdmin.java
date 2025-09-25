@@ -13,8 +13,10 @@ public class SuperAdmin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_super_admin_user"))
+    private User user;
 
     @Column(columnDefinition = "JSON")
     private String permissions;
@@ -26,17 +28,19 @@ public class SuperAdmin {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public SuperAdmin() {
+    }
 
-    public SuperAdmin(Long userId) {
-        this.userId = userId;
+    public SuperAdmin(User user) {
+        this.user = user;
     }
 
     public Long getId() { return id; }
-    public Long getUserId() { return userId; }
+    public User getUser() { return user; }
     public String getPermissions() { return permissions; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setUserId(Long userId) { this.userId = userId; }
+    public void setUser(User user) { this.user = user; }
     public void setPermissions(String permissions) { this.permissions = permissions; }
 }

@@ -1,21 +1,17 @@
 package com.example.School_System.controllers;
 
-import com.example.School_System.dto.CreateSchoolRequest;
-import com.example.School_System.dto.PaginatedSchoolResponse;
-import com.example.School_System.dto.SchoolDetailsResponse;
-import com.example.School_System.dto.UpdateSchoolRequest;
-import com.example.School_System.entities.School;
+import com.example.School_System.dto.school.CreateSchoolRequest;
+import com.example.School_System.dto.school.PaginatedSchoolResponse;
+import com.example.School_System.dto.school.SchoolDetailsResponse;
+import com.example.School_System.dto.school.UpdateSchoolRequest;
 import com.example.School_System.entities.User;
 import com.example.School_System.services.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/schools")
@@ -44,13 +40,13 @@ public class SchoolController {
     }
 
     @PutMapping("/{schoolId}")
-    public ResponseEntity<?> updateSchool(@RequestBody UpdateSchoolRequest request,@PathVariable Long schoolId){
+    public ResponseEntity<HttpStatus> updateSchool(@RequestBody UpdateSchoolRequest request,@PathVariable Long schoolId){
         schoolService.updateSchool(request,schoolId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{schoolId}")
-    public ResponseEntity<?> deleteSchool(@PathVariable Long schoolId){
+    public ResponseEntity<HttpStatus> deleteSchool(@PathVariable Long schoolId){
         schoolService.deleteSchool(schoolId);
         return ResponseEntity.ok().build();
     }

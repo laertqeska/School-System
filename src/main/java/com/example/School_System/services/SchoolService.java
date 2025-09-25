@@ -1,7 +1,8 @@
 package com.example.School_System.services;
 
 
-import com.example.School_System.dto.*;
+import com.example.School_System.dto.mappers.SchoolMapper;
+import com.example.School_System.dto.school.*;
 import com.example.School_System.entities.School;
 import com.example.School_System.entities.User;
 import com.example.School_System.repositories.SchoolRepository;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,6 +25,8 @@ public class SchoolService {
     private UserRepository userRepository;
 
     public PaginatedSchoolResponse listSchools(int page, int perPage){
+        if(page > 0) page--;
+        else throw new RuntimeException("Page parameter cannot be smaller or equal to 0!!!");
         Pageable pageable = PageRequest.of(page,perPage);
         Page<School> schoolPage = schoolRepository.findAll(pageable);
         List<SchoolModel> response = new ArrayList<>();
@@ -53,7 +55,7 @@ public class SchoolService {
 
         School school = new School(
                 request.getName(),
-                request.getUniversityType(),
+                request.getSchoolType(),
                 request.getLicenseNumber(),
                 rector,
                 request.getAddress(),
@@ -75,7 +77,7 @@ public class SchoolService {
         School school = schoolRepository.findById(id).orElseThrow(()->new RuntimeException("School with ID" + id + "not found!!!"));
         SchoolDetailsResponse response = new SchoolDetailsResponse(
                 school.getName(),
-                school.getUniversityType().toString(),
+                school.getSchoolType().toString(),
                 school.getLicenseNumber(),
                 school.getRector().getFirstName() + " " + school.getRector().getLastName(),
                 school.getAddress(),
@@ -89,7 +91,7 @@ public class SchoolService {
         return response;
     }
 
-    public void updateSchool(UpdateSchoolRequest request,Long schoolId){
+    public void updateSchool(UpdateSchoolRequest request, Long schoolId){
         School school = schoolRepository.findById(schoolId).orElseThrow(()->new RuntimeException("School with ID" + schoolId + "not found!!!"));
         User rector = null;
         if(request.getRectorId() != null){

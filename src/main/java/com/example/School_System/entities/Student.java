@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "students")
@@ -16,14 +18,21 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_student_user"))
+    private User user;
 
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "school_id", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_students_school")
+    )
+    private School school;
 
-    @Column(name = "study_program_id", nullable = false)
-    private Long studyProgramId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "study_program_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_students_study_program"))
+    private StudyProgram studyProgram;
 
     @Column(name = "student_id", length = 50, unique = true)
     private String studentId;
@@ -38,6 +47,7 @@ public class Student {
     private Integer currentSemester;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private StudentStatus status = StudentStatus.ACTIVE;
 
     @Column(name = "personal_number", length = 20)
@@ -59,10 +69,17 @@ public class Student {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Student(Long userId, Long schoolId, Long studyProgramId, String studentId, Date enrollmentDate, StudentStatus status, String personalNumber, Date dateOfBirth, Gender gender, String address) {
-        this.userId = userId;
-        this.schoolId = schoolId;
-        this.studyProgramId = studyProgramId;
+    @OneToMany(mappedBy = "student",fetch = FetchType.LAZY)
+    private Set<Grade> grades = new HashSet<>();
+
+
+    public Student() {
+    }
+
+    public Student(User user, School school, StudyProgram studyProgram, String studentId, Date enrollmentDate, StudentStatus status, String personalNumber, Date dateOfBirth, Gender gender, String address) {
+        this.user = user;
+        this.school = school;
+        this.studyProgram = studyProgram;
         this.studentId = studentId;
         this.enrollmentDate = enrollmentDate;
         this.currentYear = 1;
@@ -75,9 +92,9 @@ public class Student {
     }
 
     public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public Long getSchoolId() { return schoolId; }
-    public Long getStudyProgramId() { return studyProgramId; }
+    public User getUser() { return user; }
+    public School getSchool() { return school; }
+    public StudyProgram getStudyProgram() { return studyProgram; }
     public String getStudentId() { return studentId; }
     public Date getEnrollmentDate() { return enrollmentDate; }
     public Integer getCurrentYear() { return currentYear; }
@@ -90,9 +107,9 @@ public class Student {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setUserId(Long userId) { this.userId = userId; }
-    public void setSchoolId(Long schoolId) { this.schoolId = schoolId; }
-    public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }
+    public void setUser(User user) { this.user = user; }
+    public void setSchoolId(School school) { this.school = school; }
+    public void setStudyProgram(StudyProgram studyProgram) { this.studyProgram = studyProgram; }
     public void setStudentId(String studentId) { this.studentId = studentId; }
     public void setEnrollmentDate(Date enrollmentDate) { this.enrollmentDate = enrollmentDate; }
     public void setCurrentYear(Integer currentYear) { this.currentYear = currentYear; }

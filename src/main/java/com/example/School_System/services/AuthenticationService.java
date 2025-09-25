@@ -1,17 +1,21 @@
 package com.example.School_System.services;
 
-import com.example.School_System.dto.AuthenticationRequest;
-import com.example.School_System.dto.AuthenticationResponse;
-import com.example.School_System.dto.RegisterRequest;
+import com.example.School_System.dto.authentication.AuthenticationRequest;
+import com.example.School_System.dto.authentication.AuthenticationResponse;
+import com.example.School_System.dto.authentication.RegisterRequest;
+import com.example.School_System.entities.Role;
 import com.example.School_System.entities.User;
+import com.example.School_System.entities.valueObjects.RoleName;
 import com.example.School_System.repositories.RoleRepository;
 import com.example.School_System.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Transactional
 @Service
 public class AuthenticationService {
     @Autowired
@@ -29,7 +33,8 @@ public class AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request){
+
+    public AuthenticationResponse registerSuperAdmin(RegisterRequest request){
         if(userRepository.findByUsername(request.getUsername()).isPresent()){
             throw new RuntimeException("Username already exists!");
         }
@@ -43,6 +48,8 @@ public class AuthenticationService {
                 request.getFirstName(),
                 request.getLastName()
         );
+        Role role = roleRepository.findByName(RoleName.SUPER_ADMIN).orElseThrow();
+        user.getRoles().add(role);
         userRepository.save(user);
         var accessToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -51,6 +58,45 @@ public class AuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public AuthenticationResponse authenticateWithRole(AuthenticationRequest request, RoleName requiredRole){
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+
+        var user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        boolean hasRequiredRole = user.getRoles().stream().anyMatch(role -> role.getName() == requiredRole);
+        if(!hasRequiredRole){
+            throw new RuntimeException("Access denied: " + requiredRole + " role required!!!");
+        }
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
+
+        return AuthenticationResponse.builder()
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
+
+    }
+
+    public AuthenticationResponse authenticateSuperAdmin(AuthenticationRequest request) {
+        return authenticateWithRole(request,RoleName.SUPER_ADMIN);
+    }
+
+    public AuthenticationResponse authenticateStudent(AuthenticationRequest request) {
+        return authenticateWithRole(request,RoleName.STUDENT);
+    }
+
+    public AuthenticationResponse authenticateTeacher(AuthenticationRequest request) {
+        return authenticateWithRole(request,RoleName.TEACHER);
+    }
+
+    public AuthenticationResponse authenticateSchoolAdmin(AuthenticationRequest request) {
+        return authenticateWithRole(request,RoleName.SCHOOL_ADMIN);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
@@ -84,11 +130,10 @@ public class AuthenticationService {
                 var newRefreshToken = jwtService.generateRefreshToken(user);
                 return AuthenticationResponse.builder()
                         .accessToken(accessToken)
-                        .refreshToken(refreshToken)
+                        .refreshToken(newRefreshToken)
                         .build();
             }
         }
         throw new IllegalArgumentException("Invalid refresh token!");
     }
-
 }

@@ -1,12 +1,13 @@
-package com.example.School_System.dto;
+package com.example.School_System.dto.mappers;
 
+import com.example.School_System.dto.school.UpdateSchoolRequest;
 import com.example.School_System.entities.School;
 import com.example.School_System.entities.User;
 
 public class SchoolMapper {
     public static void updateSchoolFromDto(UpdateSchoolRequest dto, School school, User rector) {
         if (dto.getName() != null) school.setName(dto.getName());
-        if (dto.getUniversityType() != null) school.setUniversityType(dto.getUniversityType());
+        if (dto.getUniversityType() != null) school.setSchoolType(dto.getUniversityType());
         if (dto.getAddress() != null) school.setAddress(dto.getAddress());
         if (dto.getCity() != null) school.setCity(dto.getCity());
         if (dto.getPhone() != null) school.setPhone(dto.getPhone());

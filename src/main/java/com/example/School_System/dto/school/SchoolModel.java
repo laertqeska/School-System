@@ -1,4 +1,4 @@
-package com.example.School_System.dto;
+package com.example.School_System.dto.school;
 
 public class SchoolModel {
     private Long id;

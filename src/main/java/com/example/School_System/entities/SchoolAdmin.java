@@ -13,11 +13,16 @@ public class SchoolAdmin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_school_admin_user"))
+    private User user;
 
-    @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "school_id", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_school_admin_school")
+    )
+    private School school;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -26,17 +31,20 @@ public class SchoolAdmin {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public SchoolAdmin(Long userId, Long schoolId) {
-        this.userId = userId;
-        this.schoolId = schoolId;
+    public SchoolAdmin() {
+    }
+
+    public SchoolAdmin(User user, School school) {
+        this.user = user;
+        this.school = school;
     }
 
     public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public Long getSchoolId() { return schoolId; }
+    public User getUser() { return user; }
+    public School getSchool() { return school; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
-    public void setUserId(Long userId) { this.userId = userId; }
-    public void setSchoolId(Long schoolId) { this.schoolId = schoolId; }
+    public void setUser(User user) { this.user = user; }
+    public void setSchool(School school) { this.school = school; }
 }
