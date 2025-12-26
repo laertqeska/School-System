@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reject Faculty</title>
+    <link rel="stylesheet" href="/css/approval.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div id="error-message" class="error-box" style="display: none;">
+            <h2>⚠️ Error</h2>
+            <p id="error-text"></p>
+            <button onclick="window.location.href='/rector/dashboard.html'" class="btn btn-secondary">
+                Go to Dashboard
+            </button>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>❌ Reject Faculty</h1>
+            </div>
+
+            <div class="faculty-info">
+                <h2 id="faculty-name"></h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Code:</span>
+                        <span id="faculty-code" class="value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">School:</span>
+                        <span id="school-name" class="value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Created by:</span>
+                        <span id="created-by" class="value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Created on:</span>
+                        <span id="created-at" class="value"></span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="rejection-form">
+                <div class="form-group">
+                    <label for="reason">
+                        Reason for Rejection <span class="required">*</span>
+                    </label>
+                    <textarea
+                            id="reason"
+                            name="reason"
+                            rows="6"
+                            placeholder="Please provide a detailed reason for rejection (minimum 10 characters)..."
+                            required
+                            minlength="10"
+                            maxlength="500"
+                    ></textarea>
+                    <div class="char-count">
+                        <span id="char-count">0</span>/500 characters
+                    </div>
+                    <div id="reason-error" class="field-error" style="display: none;"></div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" id="confirm-btn" class="btn btn-danger">
+                        Confirm Rejection
+                    </button>
+                    <button type="button" id="cancel-btn" class="btn btn-secondary">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/js/reject-faculty.js"></script>
+</body>
+</html>

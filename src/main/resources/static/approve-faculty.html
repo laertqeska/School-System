@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Faculty</title>
+    <link rel="stylesheet" href="/css/approval.css">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div id="error-message" class="error-box" style="display: none;">
+            <h2>⚠️ Error</h2>
+            <p id="error-text"></p>
+            <button onclick="window.location.href='/rector/dashboard.html'" class="btn btn-secondary">
+                Go to Dashboard
+            </button>
+        </div>
+
+        <div id="content" style="display: none;">
+            <div class="header">
+                <h1>✅ Confirm Faculty Approval</h1>
+            </div>
+
+            <div class="faculty-info">
+                <h2 id="faculty-name"></h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="label">Code:</span>
+                        <span id="faculty-code" class="value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">School:</span>
+                        <span id="school-name" class="value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Created by:</span>
+                        <span id="created-by" class="value"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Created on:</span>
+                        <span id="created-at" class="value"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="confirmation-message">
+                <p>Are you sure you want to <strong class="text-success">APPROVE</strong> this faculty?</p>
+            </div>
+
+            <div class="actions">
+                <button id="confirm-btn" class="btn btn-success">
+                    Confirm Approval
+                </button>
+                <button id="cancel-btn" class="btn btn-secondary">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/approve-faculty.js"></script>
+</body>
+</html>

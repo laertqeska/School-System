@@ -4,6 +4,7 @@ import com.example.School_System.dto.authentication.AuthenticationRequest;
 import com.example.School_System.dto.authentication.AuthenticationResponse;
 import com.example.School_System.dto.authentication.RegisterRequest;
 import com.example.School_System.services.AuthenticationService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +31,19 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.authenticateTeacher(request));
     }
 
+    @PostMapping("/login/dean")
+    public ResponseEntity<AuthenticationResponse> authenticateDean(@RequestBody AuthenticationRequest request) {
+        return ResponseEntity.ok(authenticationService.authenticateDean(request));
+    }
+
     @PostMapping("/login/school-admin")
     public ResponseEntity<AuthenticationResponse> authenticateSchoolAdmin(@RequestBody AuthenticationRequest request){
         return ResponseEntity.ok(authenticationService.authenticateSchoolAdmin(request));
+    }
+
+    @PostMapping("/login/rector")
+    public ResponseEntity<AuthenticationResponse> authenticateRector(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authenticationService.authenticateRector(request));
     }
 
     @PostMapping("/login/super-admin")

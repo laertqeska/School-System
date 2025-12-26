@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rector Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            max-width: 400px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Rector Registration</h2>
+
+<form id="rectorForm">
+    <input type="hidden" id="token" />
+
+    <label>Username</label>
+    <input type="text" id="username" required />
+
+    <label>Email</label>
+    <input type="email" id="email" required />
+
+    <label>Password</label>
+    <input type="password" id="password" required />
+
+    <label>First Name</label>
+    <input type="text" id="firstName" required />
+
+    <label>Last Name</label>
+    <input type="text" id="lastName" required />
+
+    <button type="submit">Register</button>
+</form>
+
+<p id="message"></p>
+
+<script>
+    // Extract token from URL (e.g. ?token=abcd1234)
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    document.getElementById("token").value = token;
+
+    document.getElementById("rectorForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const data = {
+            username: document.getElementById("username").value,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value
+        };
+
+        try {
+            const response = await fetch(`/api/invitations/rector/accept?token=${token}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            const messageElement = document.getElementById("message");
+            if (response.ok) {
+                messageElement.textContent = "Registration successful! You can now log in.";
+                messageElement.style.color = "green";
+            } else {
+                const errText = await response.text();
+                messageElement.textContent = "Error: " + errText;
+                messageElement.style.color = "red";
+            }
+        } catch (error) {
+            document.getElementById("message").textContent = "Something went wrong: " + error;
+        }
+    });
+</script>
+
+</body>
+</html>

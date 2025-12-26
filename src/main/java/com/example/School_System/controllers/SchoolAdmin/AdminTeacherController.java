@@ -1,0 +1,70 @@
+package com.example.School_System.controllers.SchoolAdmin;
+
+
+import com.example.School_System.dto.teacher.CreateTeacherRequest;
+import com.example.School_System.dto.teacher.PaginatedTeacherResponse;
+import com.example.School_System.dto.teacher.TeacherDetailsResponse;
+import com.example.School_System.dto.teacher.UpdateTeacherRequest;
+import com.example.School_System.services.AuthorizationService;
+import com.example.School_System.services.TeacherEnrollmentService;
+import com.example.School_System.services.TeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/admin/teachers")
+@PreAuthorize("hasRole('SCHOOL_ADMIN')")
+public class AdminTeacherController {
+    @Autowired
+    private TeacherService teacherService;
+
+    @Autowired
+    private TeacherEnrollmentService teacherCreationService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
+
+
+    @PostMapping("/create")
+    public ResponseEntity<Long> createTeacher(@RequestBody CreateTeacherRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long id = teacherCreationService.createTeacher(request,authentication);
+        return new ResponseEntity<>(id,HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<PaginatedTeacherResponse> getTeachers(@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int perPage,@RequestParam(required = false) String search){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        PaginatedTeacherResponse response =  teacherService.listTeachers(authentication,page,perPage,search);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{teacherId}")
+    public ResponseEntity<TeacherDetailsResponse> getTeacherDetails(@PathVariable Long teacherId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authorizationService.validateAdminAccessToTeacher(authentication,teacherId);
+        TeacherDetailsResponse response = teacherService.getTeacherDetails(teacherId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/{teacherId}")
+    public ResponseEntity<Void> updateTeacher(@PathVariable Long teacherId, @RequestBody UpdateTeacherRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authorizationService.validateAdminAccessToTeacher(authentication,teacherId);
+        teacherService.updateTeacher(request,teacherId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{teacherId}")
+    public ResponseEntity<Void> deleteTeacher(@PathVariable Long teacherId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authorizationService.validateAdminAccessToTeacher(authentication,teacherId);
+        teacherService.deleteTeacher(teacherId);
+        return ResponseEntity.ok().build();
+    }
+}

@@ -7,6 +7,7 @@ import com.example.School_System.entities.School;
 import com.example.School_System.entities.User;
 import com.example.School_System.repositories.SchoolRepository;
 import com.example.School_System.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,9 @@ public class SchoolService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RectorInvitationService rectorInvitationService;
+
     public PaginatedSchoolResponse listSchools(int page, int perPage){
         if(page > 0) page--;
         else throw new RuntimeException("Page parameter cannot be smaller or equal to 0!!!");
@@ -40,24 +44,22 @@ public class SchoolService {
             );
             response.add(schoolModel);
         }
-        PaginatedSchoolResponse paginatedResponse = new PaginatedSchoolResponse(
+        return new PaginatedSchoolResponse(
                 response,
                 page,
                 perPage,
                 schoolPage.getTotalElements(),
                 schoolPage.getTotalPages()
         );
-        return paginatedResponse;
     }
 
+    @Transactional
     public Long createSchool(CreateSchoolRequest request, User createdBy) throws RuntimeException{
-        User rector = userRepository.findById(request.getRectorId()).orElseThrow(()->new RuntimeException("Rector with ID" + request.getRectorId() + "not found!!!"));
-
         School school = new School(
                 request.getName(),
                 request.getSchoolType(),
                 request.getLicenseNumber(),
-                rector,
+                null,
                 request.getAddress(),
                 request.getCity(),
                 request.getPostalCode(),
@@ -70,12 +72,15 @@ public class SchoolService {
         );
 
         schoolRepository.save(school);
+
+        rectorInvitationService.createInvitation(school.getId(),request.getRectorFullName(),request.getRectorEmail(),createdBy);
+
         return school.getId();
     }
 
     public SchoolDetailsResponse getSchoolDetails(Long id){
         School school = schoolRepository.findById(id).orElseThrow(()->new RuntimeException("School with ID" + id + "not found!!!"));
-        SchoolDetailsResponse response = new SchoolDetailsResponse(
+        return new SchoolDetailsResponse(
                 school.getName(),
                 school.getSchoolType().toString(),
                 school.getLicenseNumber(),
@@ -88,7 +93,6 @@ public class SchoolService {
                 school.getWebsiteLink(),
                 school.getEstablishmentYear()
         );
-        return response;
     }
 
     public void updateSchool(UpdateSchoolRequest request, Long schoolId){

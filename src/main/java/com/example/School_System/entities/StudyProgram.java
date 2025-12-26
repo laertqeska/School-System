@@ -76,6 +76,30 @@ public class StudyProgram {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
+    public Set<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<Student> students) {
+        this.students = students;
+    }
+
+    public Set<StudyProgramSubject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(Set<StudyProgramSubject> subjects) {
+        this.subjects = subjects;
+    }
+
+    public Set<SchoolClass> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Set<SchoolClass> classes) {
+        this.classes = classes;
+    }
+
     public void setDepartment(Department department) { this.department = department; }
     public void setName(String name) { this.name = name; }
     public void setDegreeLevel(DegreeLevel degreeLevel) { this.degreeLevel = degreeLevel; }

@@ -1,0 +1,37 @@
+package com.example.School_System.controllers.Dean;
+
+import com.example.School_System.dto.department.CreateDepartmentRequest;
+import com.example.School_System.dto.department.DepartmentModelResponse;
+import com.example.School_System.entities.User;
+import com.example.School_System.services.AuthorizationService;
+import com.example.School_System.services.DepartmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/dean/departments")
+@PreAuthorize("hasRole('DEAN')")
+public class DeanDepartmentsController {
+    @Autowired
+    private DepartmentService departmentService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
+    @PostMapping
+    public ResponseEntity<Long> createDepartment(@RequestBody CreateDepartmentRequest request){
+        User user = authorizationService.getCurrentUser();
+        Long response = departmentService.createDepartment(user,request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    @GetMapping
+    public ResponseEntity<List<DepartmentModelResponse>> getDepartments(){
+        User user = authorizationService.getCurrentUser();
+        List<DepartmentModelResponse> response = departmentService.getDepartments(user);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+}

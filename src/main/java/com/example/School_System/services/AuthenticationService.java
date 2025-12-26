@@ -99,6 +99,13 @@ public class AuthenticationService {
         return authenticateWithRole(request,RoleName.SCHOOL_ADMIN);
     }
 
+    public AuthenticationResponse authenticateRector(AuthenticationRequest request){
+        return authenticateWithRole(request,RoleName.RECTOR);
+    }
+
+    public AuthenticationResponse authenticateDean(AuthenticationRequest request){
+        return authenticateWithRole(request,RoleName.DEAN);
+    }
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(

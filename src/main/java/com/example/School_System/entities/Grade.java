@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,10 +27,10 @@ public class Grade {
     private Student student;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id", nullable = false,
-        foreignKey = @ForeignKey(name = "fk_grades_subject")
+    @JoinColumn(name = "study_program_subject_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_grades_study_program_subject")
     )
-    private Subject subject;
+    private StudyProgramSubject studyProgramSubject;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false,
@@ -60,7 +61,7 @@ public class Grade {
     private BigDecimal maxScore;
 
     @Column(name = "grade_date", nullable = false)
-    private Date gradeDate;
+    private LocalDate gradeDate;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -73,9 +74,9 @@ public class Grade {
     private LocalDateTime updatedAt;
 
 
-    public Grade(Student student, Subject subject, Teacher teacher, SchoolClass schoolClass, AcademicYear academicYear, GradeType gradeType, BigDecimal score, BigDecimal maxScore, Date gradeDate, String notes) {
+    public Grade(Student student, StudyProgramSubject studyProgramSubject, Teacher teacher, SchoolClass schoolClass, AcademicYear academicYear, GradeType gradeType, BigDecimal score, BigDecimal maxScore, LocalDate  gradeDate, String notes) {
         this.student = student;
-        this.subject = subject;
+        this.studyProgramSubject = studyProgramSubject;
         this.teacher = teacher;
         this.schoolClass = schoolClass;
         this.academicYear = academicYear;
@@ -91,26 +92,26 @@ public class Grade {
 
     public Long getId() { return id; }
     public Student getStudent() { return student; }
-    public Subject getSubject() { return subject; }
+    public StudyProgramSubject getStudyProgramSubject() { return studyProgramSubject; }
     public Teacher getTeacher() { return teacher; }
     public SchoolClass getSchoolClass() { return schoolClass; }
     public AcademicYear getAcademicYear() { return academicYear; }
     public GradeType getGradeType() { return gradeType; }
     public BigDecimal getScore() { return score; }
     public BigDecimal getMaxScore() { return maxScore; }
-    public Date getGradeDate() { return gradeDate; }
+    public LocalDate  getGradeDate() { return gradeDate; }
     public String getNotes() { return notes; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     public void setStudent(Student student) { this.student = student; }
-    public void setSubject(Subject subject) { this.subject = subject; }
+    public void setStudyProgramSubject(StudyProgramSubject studyProgramSubject) { this.studyProgramSubject = studyProgramSubject; }
     public void setTeacher(Teacher teacher) { this.teacher = teacher; }
     public void setSchoolClass(SchoolClass schoolClass) { this.schoolClass = schoolClass; }
     public void setAcademicYear(AcademicYear academicYear) { this.academicYear = academicYear; }
     public void setGradeType(GradeType gradeType) { this.gradeType = gradeType; }
     public void setScore(BigDecimal score) { this.score = score; }
     public void setMaxScore(BigDecimal maxScore) { this.maxScore = maxScore; }
-    public void setGradeDate(Date gradeDate) { this.gradeDate = gradeDate; }
+    public void setGradeDate(LocalDate  gradeDate) { this.gradeDate = gradeDate; }
     public void setNotes(String notes) { this.notes = notes; }
 }

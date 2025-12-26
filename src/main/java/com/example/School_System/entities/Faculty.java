@@ -1,5 +1,6 @@
 package com.example.School_System.entities;
 
+import com.example.School_System.entities.valueObjects.ApprovalStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,13 +27,29 @@ public class Faculty {
     @Column(length = 50)
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dean_id",
             foreignKey = @ForeignKey(name = "fk_faculty_dean"))
     private User dean;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status",nullable = false)
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by",nullable = false,
+            foreignKey = @ForeignKey(name = "fk_faculties_created_by")
+    )
+    private User createdBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -44,14 +61,18 @@ public class Faculty {
     @OneToMany(mappedBy = "faculty",fetch = FetchType.LAZY)
     private Set<Department> departments = new HashSet<>();
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="approved_by",foreignKey = @ForeignKey(name = "fk_faculties_approved_by"))
+    private User approvedBy;
 
     public Faculty() {
     }
 
-    public Faculty(School school, String name) {
+    public Faculty(School school, String name, String code,User createdBy) {
         this.school = school;
         this.name = name;
+        this.code = code;
+        this.createdBy = createdBy;
     }
 
 
@@ -70,4 +91,41 @@ public class Faculty {
     public void setCode(String code) { this.code = code; }
     public void setDean(User dean) { this.dean = dean; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public LocalDateTime getApprovedAt() {
+        return approvedAt;
+    }
+
+    public Set<Department> getDepartments() {
+        return departments;
+    }
+
+    public User getApprovedBy() {
+        return approvedBy;
+    }
+
+    public User getCreatedBy(){
+        return createdBy;
+    }
+
+    public void approve(User user){
+        this.approvalStatus = ApprovalStatus.APPROVED;
+        this.approvedAt = LocalDateTime.now();
+        this.approvedBy = user;
+    }
+
+    public void reject(User user,String rejectionReason){
+        approvalStatus = ApprovalStatus.REJECTED;
+        approvedAt = LocalDateTime.now();
+        approvedBy = user;
+        this.rejectionReason = rejectionReason;
+    }
 }

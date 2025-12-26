@@ -1,7 +1,7 @@
 CREATE TABLE teacher_subjects (
     id BIGINT GENERATED ALWAYS as IDENTITY PRIMARY KEY,
     teacher_id BIGINT NOT NULL,
-    subject_id BIGINT NOT NULL,         -- References subjects table
+    subject_id BIGINT NOT NULL,
     class_id BIGINT NOT NULL,
     academic_year_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

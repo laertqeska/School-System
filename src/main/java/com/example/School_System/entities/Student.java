@@ -30,6 +30,12 @@ public class Student {
     private School school;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id",nullable = false,
+        foreignKey = @ForeignKey(name = "fk_students_class")
+    )
+    private SchoolClass schoolClass;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_program_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_students_study_program"))
     private StudyProgram studyProgram;
@@ -106,6 +112,14 @@ public class Student {
     public String getAddress() { return address; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public SchoolClass getSchoolClass() {
+        return schoolClass;
+    }
+
+    public void setSchoolClass(SchoolClass schoolClass) {
+        this.schoolClass = schoolClass;
+    }
 
     public void setUser(User user) { this.user = user; }
     public void setSchoolId(School school) { this.school = school; }

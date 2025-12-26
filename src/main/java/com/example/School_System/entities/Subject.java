@@ -15,11 +15,16 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_subjects_school"))
     private School school;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_subjects_department")
+    )
+    private Department department;
 
     @Column(nullable = false)
     private String name;
@@ -41,23 +46,17 @@ public class Subject {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
-    private Set<Grade> grades = new HashSet<>();
-
-    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
     private Set<StudyProgramSubject> studyProgramSubjects = new HashSet<>();
-
-    @OneToMany(mappedBy = "subjectId", fetch = FetchType.LAZY)
-    private Set<TeacherSubject> teacherSubjects = new HashSet<>();
 
     public Subject() {
     }
 
-
-    public Subject(School school, String name, String code, String description, Boolean isActive) {
+    public Subject(School school, String name, String code, String description,Department department, Boolean isActive) {
         this.school = school;
         this.name = name;
         this.code = code;
         this.description = description;
+        this.department = department;
         this.isActive = isActive;
     }
 
@@ -75,4 +74,20 @@ public class Subject {
     public void setCode(String code) { this.code = code; }
     public void setDescription(String description) { this.description = description; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public Set<StudyProgramSubject> getStudyProgramSubjects() {
+        return studyProgramSubjects;
+    }
+
+    public void setStudyProgramSubjects(Set<StudyProgramSubject> studyProgramSubjects) {
+        this.studyProgramSubjects = studyProgramSubjects;
+    }
 }

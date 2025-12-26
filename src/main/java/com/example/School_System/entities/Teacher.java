@@ -54,7 +54,7 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY)
     private Set<Grade> grades = new HashSet<>();
 
-    @OneToMany(mappedBy = "teacherId",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "teacher",fetch = FetchType.LAZY)
     private Set<TeacherSubject> teacherSubjects = new HashSet<>();
 
     @OneToOne(mappedBy = "departmentHead", fetch = FetchType.LAZY)

@@ -44,8 +44,11 @@ public class SchoolClass {
     @OneToMany(mappedBy = "schoolClass", fetch = FetchType.LAZY)
     private Set<Grade> grades = new HashSet<>();
 
-    @OneToMany(mappedBy = "classId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "schoolClass", fetch = FetchType.LAZY)
     private Set<TeacherSubject> teacherSubjects = new HashSet<>();
+
+    @OneToMany(mappedBy = "schoolClass",fetch = FetchType.LAZY)
+    private Set<Student> students = new HashSet<>();
 
     public SchoolClass() {
     }
@@ -67,6 +70,30 @@ public class SchoolClass {
     public Integer getMaxStudents() { return maxStudents; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public Set<Grade> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(Set<Grade> grades) {
+        this.grades = grades;
+    }
+
+    public Set<TeacherSubject> getTeacherSubjects() {
+        return teacherSubjects;
+    }
+
+    public void setTeacherSubjects(Set<TeacherSubject> teacherSubjects) {
+        this.teacherSubjects = teacherSubjects;
+    }
+
+    public Set<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<Student> students) {
+        this.students = students;
+    }
 
     public void setStudyProgram(StudyProgram studyProgram) { this.studyProgram = studyProgram; }
     public void setAcademicYear(AcademicYear academicYear) { this.academicYear = academicYear; }

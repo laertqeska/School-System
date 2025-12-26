@@ -1,0 +1,27 @@
+--ALTER FACULTIES TABLE , ADDING COLUMNS AND FOREIGN KEY FOR THE APPROVAL SYSTEM
+ALTER TABLE faculties
+ADD COLUMN approval_status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+ADD COLUMN approved_by BIGINT,
+ADD COLUMN approved_at TIMESTAMP,
+ADD COLUMN rejection_reason VARCHAR(255),
+ADD COLUMN created_by BIGINT NOT NULL;
+
+ALTER TABLE faculties
+ADD CONSTRAINT fk_faculties_approved_by
+FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE faculties
+ADD CONSTRAINT fk_faculties_created_by
+FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE;
+
+--CREATE TABLE FACULTY APPROVAL TOKENS
+CREATE TABLE faculty_approval_tokens(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    faculty_id BIGINT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    is_used BOOLEAN NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    CONSTRAINT fk_faculty_approval_tokens_faculty 
+        FOREIGN KEY (faculty_id) REFERENCES faculties(id) ON DELETE CASCADE
+);

@@ -160,4 +160,16 @@ public class School {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public Set<Faculty> getFaculties() {
+        return faculties;
+    }
+
+    public Set<Student> getStudents() {
+        return students;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
 }

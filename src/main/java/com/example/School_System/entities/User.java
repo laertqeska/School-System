@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,11 +64,11 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Teacher teacher;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private SchoolAdmin schoolAdmin;
+    @OneToOne(mappedBy = "dean",fetch = FetchType.LAZY)
+    private Faculty facultyOfDean;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private SuperAdmin superAdmin;
+    private SchoolAdmin schoolAdmin;
 
     @OneToMany(mappedBy = "rector", fetch = FetchType.LAZY)
     private Set<School> rectorOfSchools = new HashSet<>();
@@ -109,11 +108,38 @@ public class User implements UserDetails {
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
 
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public Faculty getFacultyOfDean() {
+        return facultyOfDean;
+    }
+
+    public SchoolAdmin getSchoolAdmin() {
+        return schoolAdmin;
+    }
+
+    public Set<School> getRectorOfSchools() {
+        return rectorOfSchools;
+    }
+
+    public Set<School> getCreatedSchools() {
+        return createdSchools;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().toString()))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toString()))
                 .collect(Collectors.toSet());
     }
 

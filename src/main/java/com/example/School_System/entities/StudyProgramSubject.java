@@ -5,6 +5,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "study_program_subjects",
@@ -46,6 +48,12 @@ public class StudyProgramSubject {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "studyProgramSubject", fetch = FetchType.LAZY)
+    private Set<Grade> grades = new HashSet<>();
+
+    @OneToMany(mappedBy = "studyProgramSubject", fetch = FetchType.LAZY)
+    private Set<TeacherSubject> teacherSubjects = new HashSet<>();
+
 
     public StudyProgramSubject(StudyProgram studyProgram, Subject subject, Integer credits, Integer semester, Integer yearLevel, String prerequisites, Boolean isActive) {
         this.studyProgram = studyProgram;
@@ -79,4 +87,12 @@ public class StudyProgramSubject {
     public void setYearLevel(Integer yearLevel) { this.yearLevel = yearLevel; }
     public void setPrerequisites(String prerequisites) { this.prerequisites = prerequisites; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public Set<Grade> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(Set<Grade> grades) {
+        this.grades = grades;
+    }
 }

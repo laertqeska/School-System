@@ -3,8 +3,8 @@ package com.example.School_System.dto.teacher;
 import jakarta.validation.constraints.NotNull;
 
 public class SubjectAssignment {
-    @NotNull(message = "Subject ID is required")
-    private Long subjectId;
+    @NotNull(message = "Study program subject ID is required")
+    private Long studyProgramSubjectId;
 
     @NotNull(message = "Class ID is required")
     private Long classId;
@@ -12,17 +12,17 @@ public class SubjectAssignment {
     public SubjectAssignment() {
     }
 
-    public SubjectAssignment(Long subjectId, Long classId) {
-        this.subjectId = subjectId;
+    public SubjectAssignment(Long studyProgramSubjectId, Long classId) {
+        this.studyProgramSubjectId = studyProgramSubjectId;
         this.classId = classId;
     }
 
-    public Long getSubjectId() {
-        return subjectId;
+    public Long getStudyProgramSubjectId() {
+        return studyProgramSubjectId;
     }
 
-    public void setSubjectId(Long subjectId) {
-        this.subjectId = subjectId;
+    public void setStudyProgramSubjectId(Long studyProgramSubjectId) {
+        this.studyProgramSubjectId = studyProgramSubjectId;
     }
 
     public Long getClassId() {

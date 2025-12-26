@@ -1,6 +1,7 @@
 package com.example.School_System.repositories;
 
 import com.example.School_System.entities.School;
+import com.example.School_System.entities.User;
 import com.example.School_System.entities.valueObjects.SchoolType;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +25,8 @@ public interface SchoolRepository extends JpaRepository<School,Long> {
     List<School> findByCity(String city);
 
     Optional<School> findByLicenseNumber(String licenseNumber);
+
+    Optional<School> findByRector(User rector);
 
     boolean existsByLicenseNumber(String licenseNumber);
 }

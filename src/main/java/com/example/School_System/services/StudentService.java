@@ -6,6 +6,7 @@ import com.example.School_System.dto.student.StudentDetailsResponse;
 import com.example.School_System.dto.student.StudentModel;
 import com.example.School_System.dto.mappers.StudentMapper;
 import com.example.School_System.entities.Student;
+import com.example.School_System.entities.User;
 import com.example.School_System.repositories.StudentRepository;
 import com.example.School_System.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,7 +31,7 @@ public class StudentService {
     @Autowired
     private UserRepository userRepository;
 
-    public PaginatedStudentResponse listStudents(int page, int perPage){
+    public PaginatedStudentResponse listAllStudents(int page, int perPage){
         Pageable pageable = PageRequest.of(page,perPage);
         Page<Student> studentPage = studentRepository.findAll(pageable);
         List<StudentModel> response = new ArrayList<>();
@@ -44,10 +45,8 @@ public class StudentService {
             );
             response.add(studentModel);
         }
-        PaginatedStudentResponse paginatedResponse = new PaginatedStudentResponse(response,page,perPage,studentPage.getTotalElements(),studentPage.getTotalPages());
-        return paginatedResponse;
+        return new PaginatedStudentResponse(response,page,perPage,studentPage.getTotalElements(),studentPage.getTotalPages());
     }
-
 
     public StudentDetailsResponse getStudentDetails(Long studentId) {
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new EntityNotFoundException("Student not found with id: " + studentId));
@@ -56,7 +55,7 @@ public class StudentService {
         LocalDate today = LocalDate.now();
         int studentAge = Period.between(localBirthDate,today).getYears();
 
-        StudentDetailsResponse response = new StudentDetailsResponse(student.getUser().getFirstName(),
+        return new StudentDetailsResponse(student.getUser().getFirstName(),
                 student.getUser().getLastName(),
                 student.getSchool().getName(),
                 studentAge,
@@ -70,7 +69,12 @@ public class StudentService {
                 student.getCurrentYear(),
                 student.getCurrentSemester()
                 );
-        return response;
+    }
+
+    public StudentDetailsResponse getStudentDetailsForStudent(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("User with username: " + username + " does not exist!"));
+        Student student = studentRepository.findByUserId(user.getId()).orElseThrow(() -> new EntityNotFoundException("Student with userId: " + user.getId() + " does not exist!" ));
+        return getStudentDetails(student.getId());
     }
 
     public void updateStudent(UpdateStudentRequest request, Long studentId){

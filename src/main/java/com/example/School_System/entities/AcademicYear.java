@@ -44,7 +44,7 @@ public class AcademicYear {
     @OneToMany(mappedBy = "academicYear", fetch = FetchType.LAZY)
     private Set<SchoolClass> classes = new HashSet<>();
 
-    @OneToMany(mappedBy = "academicYearId", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "academicYear", fetch = FetchType.LAZY)
     private Set<TeacherSubject> teacherSubjects = new HashSet<>();
 
     public AcademicYear(){}

@@ -1,0 +1,48 @@
+package com.example.School_System.services;
+
+import com.example.School_System.dto.subject.CreateSubjectRequest;
+import com.example.School_System.dto.subject.SchoolAdminSubjectModel;
+import com.example.School_System.entities.*;
+import com.example.School_System.repositories.DepartmentRepository;
+import com.example.School_System.repositories.SchoolAdminRepository;
+import com.example.School_System.repositories.SchoolRepository;
+import com.example.School_System.repositories.SubjectRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class SubjectService {
+    private final SubjectRepository subjectRepository;
+    private final SchoolAdminRepository schoolAdminRepository;
+    private final SchoolRepository schoolRepository;
+    private final DepartmentRepository departmentRepository;
+
+    public SubjectService(SubjectRepository subjectRepository, SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository, DepartmentRepository departmentRepository){
+        this.subjectRepository = subjectRepository;
+        this.schoolAdminRepository = schoolAdminRepository;
+        this.schoolRepository = schoolRepository;
+        this.departmentRepository = departmentRepository;
+    }
+
+    public Long createSubject(User user, CreateSubjectRequest request,Long departmentId){
+        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(user.getId()).orElseThrow(()->new EntityNotFoundException("School admin not found with user id: " + user.getId()));
+        School school = schoolAdmin.getSchool();
+        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
+        Subject subject = new Subject(
+                school,
+                request.getName(),
+                request.getCode(),
+                request.getDescription(),
+                department,
+                request.isActive()
+        );
+        Subject savedSubject = subjectRepository.save(subject);
+        return savedSubject.getId();
+    }
+
+    public List<SchoolAdminSubjectModel> getSubjectsForDepartment(Long departmentId){
+        return subjectRepository.findByDepartment(departmentId);
+    }
+}

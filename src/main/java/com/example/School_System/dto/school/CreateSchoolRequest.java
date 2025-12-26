@@ -16,6 +16,8 @@ public class CreateSchoolRequest {
     private String websiteLink;
     private int establishmentYear;
     private String qrCode;
+    private String rectorFullName;
+    private String rectorEmail;
 
     public String getName() {
         return name;
@@ -119,5 +121,21 @@ public class CreateSchoolRequest {
 
     public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
+    }
+
+    public String getRectorFullName() {
+        return rectorFullName;
+    }
+
+    public void setRectorFullName(String rectorFullName) {
+        this.rectorFullName = rectorFullName;
+    }
+
+    public String getRectorEmail() {
+        return rectorEmail;
+    }
+
+    public void setRectorEmail(String rectorEmail) {
+        this.rectorEmail = rectorEmail;
     }
 }

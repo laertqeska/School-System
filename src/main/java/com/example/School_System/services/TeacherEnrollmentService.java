@@ -7,6 +7,7 @@ import com.example.School_System.entities.valueObjects.RoleName;
 import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class TeacherEnrollmentService {
     private final UserRepository userRepository;
     private final TeacherRepository teacherRepository;
     private final StudyProgramRepository studyProgramRepository;
+    private final StudyProgramSubjectRepository studyProgramSubjectRepository;
     private final SubjectRepository subjectRepository;
     private final TeacherSubjectRepository teacherSubjectRepository;
     private final DepartmentRepository departmentRepository;
@@ -26,13 +28,15 @@ public class TeacherEnrollmentService {
     private final RoleRepository roleRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final AcademicYearRepository academicYearRepository;
+    private final SchoolAdminRepository schoolAdminRepository;
 
 
-    public TeacherEnrollmentService(SchoolRepository schoolRepository, UserRepository userRepository, TeacherRepository teacherRepository, StudyProgramRepository studyProgramRepository, SubjectRepository subjectRepository, TeacherSubjectRepository teacherSubjectRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, SchoolClassRepository schoolClassRepository, AcademicYearRepository academicYearRepository) {
+    public TeacherEnrollmentService(SchoolRepository schoolRepository, UserRepository userRepository, TeacherRepository teacherRepository, StudyProgramRepository studyProgramRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, SubjectRepository subjectRepository, TeacherSubjectRepository teacherSubjectRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, SchoolClassRepository schoolClassRepository, AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository) {
         this.schoolRepository = schoolRepository;
         this.userRepository = userRepository;
         this.teacherRepository = teacherRepository;
         this.studyProgramRepository = studyProgramRepository;
+        this.studyProgramSubjectRepository = studyProgramSubjectRepository;
         this.subjectRepository = subjectRepository;
         this.teacherSubjectRepository = teacherSubjectRepository;
         this.departmentRepository = departmentRepository;
@@ -40,9 +44,13 @@ public class TeacherEnrollmentService {
         this.roleRepository = roleRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.academicYearRepository = academicYearRepository;
+        this.schoolAdminRepository = schoolAdminRepository;
     }
 
-    public Long createTeacher(CreateTeacherRequest request,Long schoolId){
+    public Long createTeacher(CreateTeacherRequest request, Authentication auth){
+        User loggedUser = (User) auth.getPrincipal();
+        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(loggedUser.getId()).orElseThrow(()->new EntityNotFoundException("School Admin not found for user id: " + loggedUser.getId()));
+        Long schoolId = schoolAdmin.getSchool().getId();
         School school = schoolRepository.findById(schoolId).orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + schoolId));
         Department department = departmentRepository.findById(request.getDepartmentId()).orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + request.getDepartmentId()));
 
@@ -109,18 +117,23 @@ public class TeacherEnrollmentService {
                 .orElseThrow(()-> new EntityNotFoundException("No academic year with this id and is current true"));
 
         for (SubjectAssignment subjectAssignment : subjectAssignmentsList) {
-            Long subjectId = subjectAssignment.getSubjectId();
+            Long studyProgramSubjectId = subjectAssignment.getStudyProgramSubjectId();
             Long schoolClassId = subjectAssignment.getClassId();
-            Subject subject = subjectRepository.findById(subjectId)
-                    .orElseThrow(() -> new EntityNotFoundException("Subject not found with ID: " + subjectId));
+            StudyProgramSubject studyProgramSubject = studyProgramSubjectRepository.findById(studyProgramSubjectId)
+                    .orElseThrow(() -> new EntityNotFoundException("StudyProgramSubject not found with ID: " + studyProgramSubjectId));
             SchoolClass schoolClass = schoolClassRepository.findById(schoolClassId)
                     .orElseThrow(() -> new EntityNotFoundException("Class not found with ID: " + schoolClassId));
 
+            boolean existingTeacherSubject = teacherSubjectRepository.existsByTeacherAndStudyProgramSubjectAndSchoolClassAndAcademicYear(teacher,studyProgramSubject,schoolClass,currentAcademicYear);
+            if(existingTeacherSubject){
+                throw new IllegalStateException("Teacher subject already exists!");
+            }
+
             TeacherSubject teacherSubject = new TeacherSubject(
-                    teacher.getId(),
-                    subject.getId(),
-                    schoolClass.getId(),
-                    currentAcademicYear.getId()
+                    teacher,
+                    studyProgramSubject,
+                    schoolClass,
+                    currentAcademicYear
             );
 
             teacherSubjectRepository.save(teacherSubject);

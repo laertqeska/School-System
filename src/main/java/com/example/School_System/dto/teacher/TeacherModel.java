@@ -2,10 +2,18 @@ package com.example.School_System.dto.teacher;
 
 public class TeacherModel {
     private String firstName;
-    private String secondName;
+    private String lastName;
     private String email;
     private String departmentName;
     private String academicTitle;
+
+    public TeacherModel(String firstName,String lastName,String email,String departmentName,String academicTitle) {
+        this.academicTitle = academicTitle;
+        this.departmentName = departmentName;
+        this.email = email;
+        this.lastName = lastName;
+        this.firstName = firstName;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -15,12 +23,12 @@ public class TeacherModel {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -44,14 +52,6 @@ public class TeacherModel {
     }
 
     public void setAcademicTitle(String academicTitle) {
-        this.academicTitle = academicTitle;
-    }
-
-    public TeacherModel(String firstName, String secondName, String email, String departmentName, String academicTitle) {
-        this.firstName = firstName;
-        this.secondName = secondName;
-        this.email = email;
-        this.departmentName = departmentName;
         this.academicTitle = academicTitle;
     }
 }

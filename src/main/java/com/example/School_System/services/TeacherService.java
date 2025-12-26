@@ -6,13 +6,13 @@ import com.example.School_System.dto.teacher.TeacherDetailsResponse;
 import com.example.School_System.dto.teacher.TeacherModel;
 import com.example.School_System.dto.teacher.UpdateTeacherRequest;
 import com.example.School_System.entities.*;
-import com.example.School_System.repositories.SchoolClassRepository;
-import com.example.School_System.repositories.SubjectRepository;
-import com.example.School_System.repositories.TeacherRepository;
+import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,14 +25,23 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final SchoolAdminRepository schoolAdminRepository;
+    private final StudyProgramSubjectRepository studyProgramSubjectRepository;
 
-    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository) {
+    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository) {
         this.teacherRepository = teacherRepository;
         this.subjectRepository = subjectRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.schoolAdminRepository = schoolAdminRepository;
+        this.studyProgramSubjectRepository = studyProgramSubjectRepository;
     }
 
-    public PaginatedTeacherResponse listTeachers(Long schoolId,int page,int perPage,String search){
+    public PaginatedTeacherResponse listTeachers(Authentication auth, int page, int perPage, String search){
+        User loggedUser = (User) auth.getPrincipal();
+        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(loggedUser.getId())
+                .orElseThrow(()-> new EntityNotFoundException("School Admin not found for user id : " + loggedUser.getId()));
+        Long schoolId = schoolAdmin.getSchool().getId();
+        if(page > 0) page--;
         Pageable pageable = PageRequest.of(page,perPage);
         Page<Teacher> teacherPage = null;
         if(search == null || search.isEmpty()){
@@ -56,22 +65,39 @@ public class TeacherService {
 
         return new PaginatedTeacherResponse(
                 response,
-                page,
+                page + 1,
                 perPage,
                 teacherPage.getTotalElements(),
                 teacherPage.getTotalPages()
         );
     }
 
+    public PaginatedTeacherResponse getTeachersByFaculty(User loggedUser, int page, int perPage,String search){
+        Faculty faculty = loggedUser.getFacultyOfDean();
+        Long facultyId = faculty.getId();
+        Long schoolId = faculty.getSchool().getId();
+        Pageable pageable = PageRequest.of(page,perPage);
+        Page<TeacherModel> teacherPage = teacherRepository.findTeachersWithSearchByFaculty(search,schoolId,facultyId,pageable);
+        return new PaginatedTeacherResponse(
+                teacherPage.getContent(),
+                page,
+                perPage,
+                teacherPage.getTotalElements(),
+                teacherPage.getTotalPages()
+        );
+
+    }
+
     public TeacherDetailsResponse getTeacherDetails(Long teacherId){
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(()-> new EntityNotFoundException("Teacher with ID: " + teacherId + " does not exist!!!"));
         User user = teacher.getUser();
-        List<String> subjects = new ArrayList<>();
+        List<String> studyProgramSubjects = new ArrayList<>();
         List<String> classes = new ArrayList<>();
         for(TeacherSubject teacherSubject : teacher.getTeacherSubjects()){
-            Subject subject = subjectRepository.findById(teacherSubject.getSubjectId()).orElseThrow(() -> new EntityNotFoundException("Subject with ID: " + teacherSubject.getSubjectId() + " does not exist!!!"));
-            SchoolClass schoolClass = schoolClassRepository.findById(teacherSubject.getClassId()).orElseThrow(()-> new EntityNotFoundException("School class with ID: " + teacherSubject.getClassId() + " does not exist!!!"));
-            subjects.add(subject.getName());
+            StudyProgramSubject studyProgramSubject = teacherSubject.getStudyProgramSubject();
+            SchoolClass schoolClass = teacherSubject.getSchoolClass();
+            String subjectName = TeacherMapper.getFullStudyProgramSubjectName(studyProgramSubject);
+            studyProgramSubjects.add(subjectName);
             classes.add(schoolClass.getName());
         }
         return new TeacherDetailsResponse(
@@ -83,7 +109,7 @@ public class TeacherService {
                 teacher.getEmployeeId(),
                 teacher.getAcademicTitle().toString(),
                 teacher.getQualification(),
-                subjects,
+                studyProgramSubjects,
                 classes
 
         );
@@ -99,5 +125,7 @@ public class TeacherService {
         Teacher teacherToDelete = teacherRepository.findById(teacherId).orElseThrow(()-> new EntityNotFoundException("Teacher with ID: " + teacherId + " does not exist!!!"));
         teacherRepository.delete(teacherToDelete);
     }
+
+
 
 }
