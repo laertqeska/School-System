@@ -29,7 +29,7 @@ public class AdminFacultyController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedFacultyResponse> getAllFaculties(@RequestParam int page,@RequestParam int perPage, @RequestParam(required = false) String search){
+    public ResponseEntity<PaginatedFacultyResponse> getAllFaculties(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int perPage, @RequestParam(required = false) String search){
         User user = authorizationService.getCurrentUser();
         PaginatedFacultyResponse response = facultyService.getAllFaculties(user,search,page,perPage);
         return new ResponseEntity<>(response,HttpStatus.OK);

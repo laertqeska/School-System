@@ -1,0 +1,15 @@
+ALTER TABLE students
+DROP COLUMN gender;
+
+ALTER TABLE students
+ADD COLUMN gender VARCHAR(6) NOT NULL;
+
+DROP TYPE IF EXISTS gender_enum;
+
+ALTER TABLE students
+DROP COLUMN status;
+
+ALTER TABLE students
+ADD COLUMN status VARCHAR(50) NOT NULL;
+
+DROP TYPE IF EXISTS status_enum;

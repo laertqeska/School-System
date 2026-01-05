@@ -5,7 +5,7 @@ public class CreateStudyProgramSubjectRequest {
     private Integer credits;
     private Integer semester;
     private Integer yearLevel;
-    private String prerequisites;
+//    private String prerequisites;
     private boolean isActive;
 
     public CreateStudyProgramSubjectRequest() {
@@ -43,13 +43,13 @@ public class CreateStudyProgramSubjectRequest {
         this.yearLevel = yearLevel;
     }
 
-    public String getPrerequisites() {
-        return prerequisites;
-    }
-
-    public void setPrerequisites(String prerequisites) {
-        this.prerequisites = prerequisites;
-    }
+//    public String getPrerequisites() {
+//        return prerequisites;
+//    }
+//
+//    public void setPrerequisites(String prerequisites) {
+//        this.prerequisites = prerequisites;
+//    }
 
     public boolean isActive() {
         return isActive;

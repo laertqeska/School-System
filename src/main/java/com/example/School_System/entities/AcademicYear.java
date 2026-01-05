@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,10 +23,10 @@ public class AcademicYear {
     private School school;
 
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = "is_current")
     private Boolean isCurrent = false;
@@ -49,7 +49,7 @@ public class AcademicYear {
 
     public AcademicYear(){}
 
-    public AcademicYear(School school,Date startDate,Date endDate) {
+    public AcademicYear(School school,LocalDate startDate,LocalDate endDate) {
         this.school = school;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -58,14 +58,14 @@ public class AcademicYear {
 
     public Long getId() { return id; }
     public School getSchool() { return school; }
-    public Date getStartDate() { return startDate; }
-    public Date getEndDate() { return endDate; }
+    public LocalDate getStartDate() { return startDate; }
+    public LocalDate getEndDate() { return endDate; }
     public Boolean getIsCurrent() { return isCurrent; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
     public void setSchool(School school) { this.school = school; }
-    public void setStartDate(Date startDate) { this.startDate = startDate; }
-    public void setEndDate(Date endDate) { this.endDate = endDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
     public void setIsCurrent(Boolean isCurrent) { this.isCurrent = isCurrent; }
 }

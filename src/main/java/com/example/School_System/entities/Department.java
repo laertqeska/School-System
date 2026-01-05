@@ -42,6 +42,12 @@ public class Department {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by",nullable = false,
+            foreignKey = @ForeignKey(name = "fk_department_created_by")
+    )
+    private User createdBy;
+
     @OneToMany(mappedBy = "department",fetch = FetchType.LAZY)
     private Set<StudyProgram> studyPrograms = new HashSet<>();
 
@@ -62,6 +68,14 @@ public class Department {
     public Boolean getIsActive() { return isActive; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public void setFaculty(Faculty faculty) { this.faculty = faculty; }
     public void setName(String name) { this.name = name; }

@@ -4,6 +4,7 @@ import com.example.School_System.dto.student.CreateStudentRequest;
 import com.example.School_System.dto.student.PaginatedStudentResponse;
 import com.example.School_System.dto.student.StudentDetailsResponse;
 import com.example.School_System.dto.student.UpdateStudentRequest;
+import com.example.School_System.entities.User;
 import com.example.School_System.services.AuthorizationService;
 import com.example.School_System.services.StudentEnrollmentService;
 import com.example.School_System.services.StudentService;
@@ -29,8 +30,9 @@ public class AdminStudentController {
     private AuthorizationService authorizationService;
 
     @GetMapping
-    public ResponseEntity<PaginatedStudentResponse> getStudents(@RequestParam int page, @RequestParam int perPage){
-        PaginatedStudentResponse response =  studentService.listAllStudents(page,perPage);
+    public ResponseEntity<PaginatedStudentResponse> getStudents(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue="10") int perPage){
+        User loggedUser = authorizationService.getCurrentUser();
+        PaginatedStudentResponse response =  studentService.listAllStudentsForSchoolAdmin(loggedUser,page,perPage);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -49,7 +51,7 @@ public class AdminStudentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateSchool(@PathVariable Long id, @RequestBody UpdateStudentRequest request){
+    public ResponseEntity<Void> updateStudent(@PathVariable Long id, @RequestBody UpdateStudentRequest request){
         studentService.updateStudent(request,id);
         return ResponseEntity.noContent().build();
     }

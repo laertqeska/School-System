@@ -45,6 +45,12 @@ public class Subject {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false,
+        foreignKey = @ForeignKey(name = "fk_subject_created_by")
+    )
+    private User createdBy;
+
     @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
     private Set<StudyProgramSubject> studyProgramSubjects = new HashSet<>();
 
@@ -89,5 +95,13 @@ public class Subject {
 
     public void setStudyProgramSubjects(Set<StudyProgramSubject> studyProgramSubjects) {
         this.studyProgramSubjects = studyProgramSubjects;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }

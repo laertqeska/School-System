@@ -32,10 +32,10 @@ public class SchoolClassService {
         return schoolClassRepository.getClassesForTeacher(teacher.getId());
     }
 
-    public Long createClass(SchoolClassCreationRequest request,User user){
-        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(user.getId()).orElseThrow(() -> new EntityNotFoundException("School admin not found with user id: " + user.getId()));
+    public Long createClass(SchoolClassCreationRequest request,User dean){
+        Long schoolId = dean.getSchool().getId();
         StudyProgram studyProgram =  studyProgramRepository.findById(request.getStudyProgramId()).orElseThrow(()-> new EntityNotFoundException("StudyProgram not found with ID: " + request.getStudyProgramId()));
-        AcademicYear academicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(schoolAdmin.getSchool().getId()).orElseThrow(() -> new EntityNotFoundException("Academic year not found!"));
+        AcademicYear academicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(schoolId).orElseThrow(() -> new EntityNotFoundException("Academic year not found!"));
 
         SchoolClass schoolClass = new SchoolClass(
                 studyProgram,

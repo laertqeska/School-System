@@ -21,12 +21,6 @@ public class AdminStudyProgramController {
     @Autowired
     private AuthorizationService authorizationService;
 
-    @PostMapping
-    public ResponseEntity<Long> createStudyProgram(@PathVariable Long departmentId,@RequestBody CreateStudyProgramRequest request){
-        Long response = studyProgramService.createStudyProgram(departmentId,request);
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
-    }
-
     @GetMapping
     public ResponseEntity<PaginatedStudyProgramResponse> getStudyPrograms(@PathVariable Long departmentId, @RequestParam int page, @RequestParam int perPage, @RequestParam(required = false) String studyProgramName, @RequestParam(required = false) DegreeLevel degreeLevel){
         User loggedUser = authorizationService.getCurrentUser();

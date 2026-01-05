@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/student/grades")
-@PreAuthorize("hasRole('SCHOOL_ADMIN,STUDENT')")
+@PreAuthorize("hasAnyRole('SCHOOL_ADMIN,STUDENT')")
 public class StudentGradesController {
     private final GradeService gradeService;
 

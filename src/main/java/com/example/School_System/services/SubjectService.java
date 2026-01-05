@@ -26,9 +26,9 @@ public class SubjectService {
         this.departmentRepository = departmentRepository;
     }
 
-    public Long createSubject(User user, CreateSubjectRequest request,Long departmentId){
-        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(user.getId()).orElseThrow(()->new EntityNotFoundException("School admin not found with user id: " + user.getId()));
-        School school = schoolAdmin.getSchool();
+    public Long createSubject(User dean, CreateSubjectRequest request){
+        Long departmentId = request.getDepartmentId();
+        School school = dean.getSchool();
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
         Subject subject = new Subject(
                 school,
@@ -38,9 +38,12 @@ public class SubjectService {
                 department,
                 request.isActive()
         );
+        subject.setCreatedBy(dean);
         Subject savedSubject = subjectRepository.save(subject);
         return savedSubject.getId();
     }
+
+
 
     public List<SchoolAdminSubjectModel> getSubjectsForDepartment(Long departmentId){
         return subjectRepository.findByDepartment(departmentId);

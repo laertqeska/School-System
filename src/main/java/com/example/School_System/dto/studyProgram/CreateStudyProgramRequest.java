@@ -8,6 +8,7 @@ public class CreateStudyProgramRequest {
     private boolean isActive;
     private Integer durationSemesters;
     private Integer totalCredits;
+    private Long departmentId;
 
     public CreateStudyProgramRequest() {
     }
@@ -50,5 +51,13 @@ public class CreateStudyProgramRequest {
 
     public void setTotalCredits(Integer totalCredits) {
         this.totalCredits = totalCredits;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

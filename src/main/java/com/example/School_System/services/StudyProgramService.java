@@ -30,7 +30,8 @@ public class StudyProgramService {
         this.departmentRepository = departmentRepository;
     }
 
-    public Long createStudyProgram(Long departmentId, CreateStudyProgramRequest request){
+    public Long createStudyProgram(CreateStudyProgramRequest request,User dean){
+        Long departmentId = request.getDepartmentId();
         Department department = departmentRepository.findById(departmentId).orElseThrow(()->new EntityNotFoundException("Department not found with id: " + departmentId));
         StudyProgram studyProgram = new StudyProgram(
                 department,
@@ -39,6 +40,7 @@ public class StudyProgramService {
                 request.getDurationSemesters(),
                 request.getTotalCredits()
         );
+        studyProgram.setCreatedBy(dean);
         StudyProgram savedStudyProgram = studyProgramRepository.save(studyProgram);
         return savedStudyProgram.getId();
     }

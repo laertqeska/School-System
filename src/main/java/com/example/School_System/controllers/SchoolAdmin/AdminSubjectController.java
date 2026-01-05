@@ -23,13 +23,6 @@ public class AdminSubjectController {
     @Autowired
     private AuthorizationService authorizationService;
 
-    @PostMapping
-    public ResponseEntity<Long> createSubject(@PathVariable Long departmentId,@RequestBody CreateSubjectRequest request){
-        User loggedUser = authorizationService.getCurrentUser();
-        Long response = subjectService.createSubject(loggedUser,request,departmentId);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
     @GetMapping
     public ResponseEntity<List<SchoolAdminSubjectModel>> getSubjectsForDepartment(@PathVariable Long departmentId){
         List<SchoolAdminSubjectModel> response = subjectService.getSubjectsForDepartment(departmentId);

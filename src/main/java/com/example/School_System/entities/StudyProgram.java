@@ -45,6 +45,12 @@ public class StudyProgram {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by",nullable = false,
+        foreignKey = @ForeignKey(name="fk_study_program_created_by")
+    )
+    private User createdBy;
+
     @OneToMany(mappedBy = "studyProgram", fetch = FetchType.LAZY)
     private Set<Student> students = new HashSet<>();
 
@@ -98,6 +104,18 @@ public class StudyProgram {
 
     public void setClasses(Set<SchoolClass> classes) {
         this.classes = classes;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Boolean getActive() {
+        return isActive;
     }
 
     public void setDepartment(Department department) { this.department = department; }

@@ -1,28 +1,28 @@
-package com.example.School_System.dto.faculty;
+package com.example.School_System.dto.rector;
 
 import java.util.List;
 
-public class PaginatedFacultyResponse {
-    private List<FacultyModel> faculties;
+public class PaginatedRectorResponse {
+    private List<RectorModel> rectors;
     private int page;
     private int perPage;
     private long totalItems;
     private int totalPages;
 
-    public PaginatedFacultyResponse(List<FacultyModel> faculties, int page, int perPage, long totalItems, int totalPages) {
-        this.faculties = faculties;
+    public PaginatedRectorResponse(List<RectorModel> rectors, int page, int perPage, long totalItems, int totalPages) {
+        this.rectors = rectors;
         this.page = page;
         this.perPage = perPage;
         this.totalItems = totalItems;
         this.totalPages = totalPages;
     }
 
-    public List<FacultyModel> getFaculties() {
-        return faculties;
+    public List<RectorModel> getRectors() {
+        return rectors;
     }
 
-    public void setFaculties(List<FacultyModel> faculties) {
-        this.faculties = faculties;
+    public void setRectors(List<RectorModel> rectors) {
+        this.rectors = rectors;
     }
 
     public int getPage() {

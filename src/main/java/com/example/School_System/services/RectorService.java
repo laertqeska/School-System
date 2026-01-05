@@ -104,4 +104,9 @@ public class RectorService {
         emailService.sendDeanInvitation(deanInvitation);
         return savedInvitation.getInvitationToken();
     }
+
+    public void getRectors(int page,int perPage,User superAdmin){
+
+    }
+
 }

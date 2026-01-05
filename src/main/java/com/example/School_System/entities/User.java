@@ -1,5 +1,6 @@
 package com.example.School_System.entities;
 
+import com.example.School_System.entities.valueObjects.RoleName;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -76,6 +77,22 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
     private Set<School> createdSchools = new HashSet<>();
 
+    // ADD: Created faculties (for audit trail)
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Faculty> createdFaculties = new HashSet<>();
+
+    // ADD: Created departments (for audit trail)
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Department> createdDepartments = new HashSet<>();
+
+    // ADD: Created subjects (for audit trail)
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<Subject> createdSubjects = new HashSet<>();
+
+    // ADD: Created study programs (for audit trail)
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private Set<StudyProgram> createdStudyPrograms = new HashSet<>();
+
     public User(){}
 
     public User(String username, String email, String passwordHash, String firstName, String lastName) {
@@ -84,6 +101,46 @@ public class User implements UserDetails {
         this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public boolean hasRole(RoleName roleName) {
+        return roles.stream()
+                .anyMatch(role -> role.getName().equals(roleName));
+    }
+
+    public boolean isSuperAdmin() {
+        return hasRole(RoleName.SUPER_ADMIN);
+    }
+
+    public boolean isRector() {
+        return hasRole(RoleName.RECTOR);
+    }
+
+    public boolean isSchoolAdmin() {
+        return hasRole(RoleName.SCHOOL_ADMIN);
+    }
+
+    public boolean isDean() {
+        return hasRole(RoleName.DEAN);
+    }
+
+    public boolean isTeacher() {
+        return hasRole(RoleName.TEACHER);
+    }
+
+    public boolean isStudent() {
+        return hasRole(RoleName.STUDENT);
+    }
+
+    public RoleName getPrimaryRole() {
+        // Return highest priority role
+        if (isSuperAdmin()) return RoleName.SUPER_ADMIN;
+        if (isRector()) return RoleName.RECTOR;
+        if (isSchoolAdmin()) return RoleName.SCHOOL_ADMIN;
+        if (isDean()) return RoleName.DEAN;
+        if (isTeacher()) return RoleName.TEACHER;
+        if (isStudent()) return RoleName.STUDENT;
+        return null;
     }
 
     public Long getId() { return id; }
@@ -134,6 +191,41 @@ public class User implements UserDetails {
 
     public Set<School> getCreatedSchools() {
         return createdSchools;
+    }
+
+    public Set<Faculty> getCreatedFaculties() {
+        return createdFaculties;
+    }
+
+    public Set<Department> getCreatedDepartments() {
+        return createdDepartments;
+    }
+
+    public Set<Subject> getCreatedSubjects() {
+        return createdSubjects;
+    }
+
+    public Set<StudyProgram> getCreatedStudyPrograms() {
+        return createdStudyPrograms;
+    }
+
+    public School getSchool() {
+        if (isRector() && !rectorOfSchools.isEmpty()) {
+            return rectorOfSchools.iterator().next();
+        }
+        if (isSchoolAdmin() && schoolAdmin != null) {
+            return schoolAdmin.getSchool();
+        }
+        if (isDean() && facultyOfDean != null) {
+            return facultyOfDean.getSchool();
+        }
+        if (isTeacher() && teacher != null) {
+            return teacher.getSchool();
+        }
+        if (isStudent() && student != null) {
+            return student.getSchool();
+        }
+        return null;
     }
 
     @Override

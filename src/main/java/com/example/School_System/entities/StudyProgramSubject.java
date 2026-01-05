@@ -34,9 +34,9 @@ public class StudyProgramSubject {
 
     @Column(name = "year_level", nullable = false)
     private Integer yearLevel;
-
-    @Column(columnDefinition = "JSON")
-    private String prerequisites;
+//
+//    @Column(columnDefinition = "JSON")
+//    private String prerequisites;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -48,6 +48,12 @@ public class StudyProgramSubject {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="created_by",nullable = false,
+        foreignKey = @ForeignKey(name="fk_study_program_subject_created_by")
+    )
+    private User createdBy;
+
     @OneToMany(mappedBy = "studyProgramSubject", fetch = FetchType.LAZY)
     private Set<Grade> grades = new HashSet<>();
 
@@ -55,13 +61,14 @@ public class StudyProgramSubject {
     private Set<TeacherSubject> teacherSubjects = new HashSet<>();
 
 
-    public StudyProgramSubject(StudyProgram studyProgram, Subject subject, Integer credits, Integer semester, Integer yearLevel, String prerequisites, Boolean isActive) {
+
+
+    public StudyProgramSubject(StudyProgram studyProgram, Subject subject, Integer credits, Integer semester, Integer yearLevel, Boolean isActive) {
         this.studyProgram = studyProgram;
         this.subject = subject;
         this.credits = credits;
         this.semester = semester;
         this.yearLevel = yearLevel;
-        this.prerequisites = prerequisites;
         this.isActive = isActive;
     }
 
@@ -75,7 +82,7 @@ public class StudyProgramSubject {
     public Integer getCredits() { return credits; }
     public Integer getSemester() { return semester; }
     public Integer getYearLevel() { return yearLevel; }
-    public String getPrerequisites() { return prerequisites; }
+//    public String getPrerequisites() { return prerequisites; }
     public Boolean getIsActive() { return isActive; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
@@ -85,7 +92,7 @@ public class StudyProgramSubject {
     public void setCredits(Integer credits) { this.credits = credits; }
     public void setSemester(Integer semester) { this.semester = semester; }
     public void setYearLevel(Integer yearLevel) { this.yearLevel = yearLevel; }
-    public void setPrerequisites(String prerequisites) { this.prerequisites = prerequisites; }
+//    public void setPrerequisites(String prerequisites) { this.prerequisites = prerequisites; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
     public Set<Grade> getGrades() {
@@ -94,5 +101,13 @@ public class StudyProgramSubject {
 
     public void setGrades(Set<Grade> grades) {
         this.grades = grades;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }

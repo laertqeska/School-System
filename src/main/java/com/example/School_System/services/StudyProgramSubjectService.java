@@ -28,7 +28,7 @@ public class StudyProgramSubjectService {
         this.teacherRepository = teacherRepository;
     }
 
-    public Long createStudyProgramSubject(Long studyProgramId, CreateStudyProgramSubjectRequest request){
+    public Long createStudyProgramSubject(Long studyProgramId, CreateStudyProgramSubjectRequest request,User dean){
         StudyProgram studyProgram = studyProgramRepository.findById(studyProgramId).orElseThrow(()->new EntityNotFoundException("Study Program not found for id: " + studyProgramId));
         Subject subject = subjectRepository.findById(request.getSubjectId()).orElseThrow(()-> new EntityNotFoundException("Subject not found for id: " + request.getSubjectId()));
         StudyProgramSubject studyProgramSubject = new StudyProgramSubject(
@@ -37,9 +37,10 @@ public class StudyProgramSubjectService {
                 request.getCredits(),
                 request.getSemester(),
                 request.getYearLevel(),
-                request.getPrerequisites(),
+//                request.getPrerequisites(),
                 request.isActive()
         );
+        studyProgramSubject.setCreatedBy(dean);
         StudyProgramSubject savedStudyProgramSubject = studyProgramSubjectRepository.save(studyProgramSubject);
         return savedStudyProgramSubject.getId();
     }

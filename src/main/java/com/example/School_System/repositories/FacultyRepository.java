@@ -14,10 +14,16 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FacultyRepository extends JpaRepository<Faculty,Long> {
-     @Query("SELECT new com.example.School_System.dto.faculty.FacultyModel(f.id, f.name) FROM Faculty f " +
+     @Query("SELECT new com.example.School_System.dto.faculty.FacultyModel(f.id, f.name) " +
+             "FROM Faculty f " +
              "WHERE f.school.id = :schoolId " +
-             "AND (:search IS NULL OR LOWER(f.name) LIKE LOWER(CONCAT('%', :search, '%')))")
-     Page<FacultyModel> getFaculties(Pageable pageable, @Param("search") String search, @Param("schoolId") Long schoolId);
+             "AND (COALESCE(:search, '') = '' OR LOWER(f.name) LIKE LOWER(CONCAT('%', :search, '%')))")
+     Page<FacultyModel> getFaculties(
+             Pageable pageable,
+             @Param("search") String search,
+             @Param("schoolId") Long schoolId
+     );
+
 
      @Query("SELECT new com.example.School_System.dto.rector.RectorFacultiesModel(f.name,f.code,d.firstName,d.lastName) " +
              "FROM Faculty f " +

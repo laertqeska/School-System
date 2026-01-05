@@ -5,6 +5,7 @@ import com.example.School_System.dto.student.UpdateStudentRequest;
 import com.example.School_System.dto.student.StudentDetailsResponse;
 import com.example.School_System.dto.student.StudentModel;
 import com.example.School_System.dto.mappers.StudentMapper;
+import com.example.School_System.entities.School;
 import com.example.School_System.entities.Student;
 import com.example.School_System.entities.User;
 import com.example.School_System.repositories.StudentRepository;
@@ -31,21 +32,11 @@ public class StudentService {
     @Autowired
     private UserRepository userRepository;
 
-    public PaginatedStudentResponse listAllStudents(int page, int perPage){
+    public PaginatedStudentResponse listAllStudentsForSchoolAdmin(User schoolAdmin,int page, int perPage){
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<Student> studentPage = studentRepository.findAll(pageable);
-        List<StudentModel> response = new ArrayList<>();
-        for(Student student : studentPage.getContent()){
-            StudentModel studentModel = new StudentModel(
-                    student.getId(),
-                    student.getUser().getFirstName(),
-                    student.getUser().getLastName(),
-                    student.getStudentId(),
-                    student.getStudyProgram().getDegreeLevel().toString() + "-" + student.getStudyProgram().getName()
-            );
-            response.add(studentModel);
-        }
-        return new PaginatedStudentResponse(response,page,perPage,studentPage.getTotalElements(),studentPage.getTotalPages());
+        Long schoolId = schoolAdmin.getSchool().getId();
+        Page<StudentModel> studentPage = studentRepository.findStudentModelsBySchoolId(schoolId,pageable);
+        return new PaginatedStudentResponse(studentPage.getContent(),page,perPage,studentPage.getTotalElements(),studentPage.getTotalPages());
     }
 
     public StudentDetailsResponse getStudentDetails(Long studentId) {

@@ -22,12 +22,14 @@ public class DepartmentService {
         this.teacherRepository = teacherRepository;
     }
 
-    public Long createDepartment(User loggedUser, CreateDepartmentRequest request){
-        Faculty faculty = loggedUser.getFacultyOfDean();
+    public Long createDepartment(User dean, CreateDepartmentRequest request){
+        Faculty faculty = dean.getFacultyOfDean();
 
         Department department = new Department(
                 faculty,request.getName()
         );
+
+        department.setCreatedBy(dean);
 
         Department savedDepartment = departmentRepository.save(department);
 
