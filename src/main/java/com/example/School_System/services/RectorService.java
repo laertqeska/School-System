@@ -1,20 +1,16 @@
 package com.example.School_System.services;
 
-import com.example.School_System.dto.rector.PaginatedRectorFacultiesResponse;
-import com.example.School_System.dto.rector.RectorFacultiesModel;
-import com.example.School_System.dto.rector.RectorInviteDeanRequest;
+import com.example.School_System.dto.rector.*;
 import com.example.School_System.entities.*;
 import com.example.School_System.entities.valueObjects.ApprovalStatus;
 import com.example.School_System.entities.valueObjects.InvitationStatus;
-import com.example.School_System.repositories.DeanInvitationRepository;
-import com.example.School_System.repositories.FacultyApprovalTokenRepository;
-import com.example.School_System.repositories.FacultyRepository;
-import com.example.School_System.repositories.SchoolRepository;
+import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
@@ -25,13 +21,15 @@ public class RectorService {
     private final FacultyApprovalTokenRepository facultyApprovalTokenRepository;
     private final EmailService emailService;
     private final DeanInvitationRepository deanInvitationRepository;
+    private final RectorRepository rectorRepository;
 
-    public RectorService(FacultyRepository facultyRepository, SchoolRepository schoolRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, EmailService emailService, DeanInvitationRepository deanInvitationRepository){
+    public RectorService(FacultyRepository facultyRepository, SchoolRepository schoolRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, EmailService emailService, DeanInvitationRepository deanInvitationRepository, RectorRepository rectorRepository){
         this.facultyRepository = facultyRepository;
         this.schoolRepository = schoolRepository;
         this.facultyApprovalTokenRepository = facultyApprovalTokenRepository;
         this.emailService = emailService;
         this.deanInvitationRepository = deanInvitationRepository;
+        this.rectorRepository = rectorRepository;
     }
 
     public PaginatedRectorFacultiesResponse getFacultiesForRector(User rector,int page, int perPage){
@@ -105,8 +103,25 @@ public class RectorService {
         return savedInvitation.getInvitationToken();
     }
 
-    public void getRectors(int page,int perPage,User superAdmin){
+    public PaginatedRectorResponse getRectors(int page,int perPage,User superAdmin,String search){
+        Pageable pageable = PageRequest.of(page,perPage);
+        if(!superAdmin.isSuperAdmin()){
+            throw new AccessDeniedException("Only super admins allowed!");
+        }
+        if (search == null || search.isBlank()) {
+            search = "";
+        } else {
+            search = search.toLowerCase();
+        }
 
+        Page<RectorModel> rectorsPage = rectorRepository.findRectorsWithSearch(pageable,search);
+        return new PaginatedRectorResponse(
+                rectorsPage.getContent(),
+                page,
+                perPage,
+                rectorsPage.getTotalElements(),
+                rectorsPage.getTotalPages()
+        );
     }
 
 }
