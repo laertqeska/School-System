@@ -71,27 +71,8 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private SchoolAdmin schoolAdmin;
 
-    @OneToMany(mappedBy = "rector", fetch = FetchType.LAZY)
-    private Set<School> rectorOfSchools = new HashSet<>();
-
-    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private Set<School> createdSchools = new HashSet<>();
-
-    // ADD: Created faculties (for audit trail)
-    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private Set<Faculty> createdFaculties = new HashSet<>();
-
-    // ADD: Created departments (for audit trail)
-    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private Set<Department> createdDepartments = new HashSet<>();
-
-    // ADD: Created subjects (for audit trail)
-    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private Set<Subject> createdSubjects = new HashSet<>();
-
-    // ADD: Created study programs (for audit trail)
-    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
-    private Set<StudyProgram> createdStudyPrograms = new HashSet<>();
+    @OneToOne(mappedBy = "rector", fetch = FetchType.LAZY)
+    private School rectorOfSchool;
 
     public User(){}
 
@@ -140,7 +121,7 @@ public class User implements UserDetails {
         if (isDean()) return RoleName.DEAN;
         if (isTeacher()) return RoleName.TEACHER;
         if (isStudent()) return RoleName.STUDENT;
-        return null;
+        throw new IllegalStateException("User has no roles assigned");
     }
 
     public Long getId() { return id; }
@@ -165,10 +146,6 @@ public class User implements UserDetails {
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
 
-    public Boolean getActive() {
-        return isActive;
-    }
-
     public Student getStudent() {
         return student;
     }
@@ -185,47 +162,8 @@ public class User implements UserDetails {
         return schoolAdmin;
     }
 
-    public Set<School> getRectorOfSchools() {
-        return rectorOfSchools;
-    }
-
-    public Set<School> getCreatedSchools() {
-        return createdSchools;
-    }
-
-    public Set<Faculty> getCreatedFaculties() {
-        return createdFaculties;
-    }
-
-    public Set<Department> getCreatedDepartments() {
-        return createdDepartments;
-    }
-
-    public Set<Subject> getCreatedSubjects() {
-        return createdSubjects;
-    }
-
-    public Set<StudyProgram> getCreatedStudyPrograms() {
-        return createdStudyPrograms;
-    }
-
-    public School getSchool() {
-        if (isRector() && !rectorOfSchools.isEmpty()) {
-            return rectorOfSchools.iterator().next();
-        }
-        if (isSchoolAdmin() && schoolAdmin != null) {
-            return schoolAdmin.getSchool();
-        }
-        if (isDean() && facultyOfDean != null) {
-            return facultyOfDean.getSchool();
-        }
-        if (isTeacher() && teacher != null) {
-            return teacher.getSchool();
-        }
-        if (isStudent() && student != null) {
-            return student.getSchool();
-        }
-        return null;
+    public School getRectorOfSchool() {
+        return rectorOfSchool;
     }
 
     @Override

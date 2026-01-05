@@ -27,9 +27,14 @@ public class School {
     @Column(name = "license_number", length = 100)
     private String licenseNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rector_id", foreignKey = @ForeignKey(name = "schools_rector_id_fkey"))
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "rector_id",
+            unique = true,
+            foreignKey = @ForeignKey(name = "schools_rector_id_fkey")
+    )
     private User rector;
+
 
     @Column(columnDefinition = "TEXT")
     private String address;

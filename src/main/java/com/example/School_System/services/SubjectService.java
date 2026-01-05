@@ -8,6 +8,7 @@ import com.example.School_System.repositories.SchoolAdminRepository;
 import com.example.School_System.repositories.SchoolRepository;
 import com.example.School_System.repositories.SubjectRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +16,14 @@ import java.util.List;
 @Service
 public class SubjectService {
     private final SubjectRepository subjectRepository;
+    private final UserContextService userContextService;
     private final SchoolAdminRepository schoolAdminRepository;
     private final SchoolRepository schoolRepository;
     private final DepartmentRepository departmentRepository;
 
-    public SubjectService(SubjectRepository subjectRepository, SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository, DepartmentRepository departmentRepository){
+    public SubjectService(SubjectRepository subjectRepository, UserContextService userContextService, SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository, DepartmentRepository departmentRepository){
         this.subjectRepository = subjectRepository;
+        this.userContextService = userContextService;
         this.schoolAdminRepository = schoolAdminRepository;
         this.schoolRepository = schoolRepository;
         this.departmentRepository = departmentRepository;
@@ -28,8 +31,14 @@ public class SubjectService {
 
     public Long createSubject(User dean, CreateSubjectRequest request){
         Long departmentId = request.getDepartmentId();
-        School school = dean.getSchool();
+        if(!dean.isDean()){
+            throw new AccessDeniedException("Only deans can create subjects!");
+        }
+        School school = userContextService.resolveSchool(dean);
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
+        if(!department.getFaculty().getSchool().getId().equals(school.getId())){
+            throw new AccessDeniedException("Department does not belong to your school");
+        }
         Subject subject = new Subject(
                 school,
                 request.getName(),

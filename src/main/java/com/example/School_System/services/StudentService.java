@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,16 +27,27 @@ import java.util.List;
 
 @Service
 public class StudentService {
-    @Autowired
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
+    private final UserContextService userContextService;
 
-    @Autowired
-    private UserRepository userRepository;
+    public StudentService(StudentRepository studentRepository, UserRepository userRepository, UserContextService userContextService) {
+        this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
+        this.userContextService = userContextService;
+    }
 
     public PaginatedStudentResponse listAllStudentsForSchoolAdmin(User schoolAdmin,int page, int perPage){
+        if(!schoolAdmin.isSchoolAdmin()){
+            throw new AccessDeniedException("You must be school admin for this endpoint!");
+        }
         Pageable pageable = PageRequest.of(page,perPage);
-        Long schoolId = schoolAdmin.getSchool().getId();
+
+        School school = userContextService.resolveSchool(schoolAdmin);
+        Long schoolId = school.getId();
+
         Page<StudentModel> studentPage = studentRepository.findStudentModelsBySchoolId(schoolId,pageable);
+
         return new PaginatedStudentResponse(studentPage.getContent(),page,perPage,studentPage.getTotalElements(),studentPage.getTotalPages());
     }
 
