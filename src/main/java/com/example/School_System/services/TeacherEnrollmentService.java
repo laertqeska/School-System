@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
+// TODO: Extract subject assignment into dedicated service and expose endpoint for post-creation assignments
+
 @Transactional
 @Service
 public class TeacherEnrollmentService {
@@ -111,6 +114,7 @@ public class TeacherEnrollmentService {
                 request.getIsActive() != null ? request.getIsActive() : true
         );
     }
+    //TODO: FIX N+1 queries problem
 
     private void assignSubjectsToTeacher(Teacher teacher, List<SubjectAssignment> subjectAssignmentsList,Long schoolId) {
         AcademicYear currentAcademicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(schoolId)
@@ -121,8 +125,14 @@ public class TeacherEnrollmentService {
             Long schoolClassId = subjectAssignment.getClassId();
             StudyProgramSubject studyProgramSubject = studyProgramSubjectRepository.findById(studyProgramSubjectId)
                     .orElseThrow(() -> new EntityNotFoundException("StudyProgramSubject not found with ID: " + studyProgramSubjectId));
+            if(!studyProgramSubject.getStudyProgram().getDepartment().getFaculty().getSchool().getId().equals(schoolId)){
+                throw new IllegalStateException("Study Program Subject is not from school with id: " + schoolId);
+            }
             SchoolClass schoolClass = schoolClassRepository.findById(schoolClassId)
                     .orElseThrow(() -> new EntityNotFoundException("Class not found with ID: " + schoolClassId));
+            if(!schoolClass.getStudyProgram().getDepartment().getFaculty().getSchool().getId().equals(schoolId)){
+                throw new IllegalStateException("Class is not from school with ID: " + schoolId);
+            }
 
             boolean existingTeacherSubject = teacherSubjectRepository.existsByTeacherAndStudyProgramSubjectAndSchoolClassAndAcademicYear(teacher,studyProgramSubject,schoolClass,currentAcademicYear);
             if(existingTeacherSubject){
@@ -139,11 +149,4 @@ public class TeacherEnrollmentService {
             teacherSubjectRepository.save(teacherSubject);
         }
     }
-
-
-
-
-
-
-
 }

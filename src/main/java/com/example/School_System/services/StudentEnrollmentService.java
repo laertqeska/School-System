@@ -18,6 +18,7 @@ public class StudentEnrollmentService {
 
     private final StudentRepository studentRepository;
     private final SchoolRepository schoolRepository;
+    private final SchoolClassRepository schoolClassRepository;
     private final StudyProgramRepository studyProgramRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -25,13 +26,14 @@ public class StudentEnrollmentService {
 
     @Autowired
     public StudentEnrollmentService(StudentRepository studentRepository,
-                          SchoolRepository schoolRepository,
-                          StudyProgramRepository studyProgramRepository,
-                          UserRepository userRepository,
-                          RoleRepository roleRepository,
-                          PasswordEncoder passwordEncoder) {
+                                    SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository,
+                                    StudyProgramRepository studyProgramRepository,
+                                    UserRepository userRepository,
+                                    RoleRepository roleRepository,
+                                    PasswordEncoder passwordEncoder) {
         this.studentRepository = studentRepository;
         this.schoolRepository = schoolRepository;
+        this.schoolClassRepository = schoolClassRepository;
         this.studyProgramRepository = studyProgramRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -44,8 +46,9 @@ public class StudentEnrollmentService {
 
         StudyProgram studyProgram = studyProgramRepository.findById(request.getStudyProgramId())
                 .orElseThrow(() -> new EntityNotFoundException("Study program not found with ID: " + request.getStudyProgramId()));
+        SchoolClass schoolClass = schoolClassRepository.findById(request.getSchoolClassId()).orElseThrow(()->new EntityNotFoundException("School class not found with ID: " + request.getSchoolClassId()));
 
-            validateStudentCreation(request, school,studyProgram);
+            validateStudentCreation(request, school,studyProgram,schoolClass);
 
         User user = createUser(request);
         User savedUser = userRepository.save(user);
@@ -53,7 +56,7 @@ public class StudentEnrollmentService {
 
         assignStudentRole(savedUser);
 
-        Student student = createStudentEntity(request, savedUser, school, studyProgram);
+        Student student = createStudentEntity(request, savedUser, school, studyProgram,schoolClass);
         studentRepository.save(student);
 
         return student.getId();
@@ -92,7 +95,7 @@ public class StudentEnrollmentService {
     }
 
     private Student createStudentEntity(CreateStudentRequest request, User user,
-                                        School school, StudyProgram studyProgram) {
+                                        School school, StudyProgram studyProgram,SchoolClass schoolClass) {
 
         String studentId = request.getStudentId();
 
@@ -108,6 +111,7 @@ public class StudentEnrollmentService {
                 user,
                 school,
                 studyProgram,
+                schoolClass,
                 studentId,
                 enrollmentDate,
                 request.getStatus(),
@@ -118,13 +122,21 @@ public class StudentEnrollmentService {
         );
     }
 
-    private void validateStudentCreation(CreateStudentRequest request, School school,StudyProgram studyProgram) {
+    private void validateStudentCreation(CreateStudentRequest request, School school,StudyProgram studyProgram,SchoolClass schoolClass) {
         if (!school.getIsActive()) {
             throw new IllegalArgumentException("Cannot enroll student in inactive school!");
         }
 
-        if(studyProgram.getDepartment().getFaculty().getSchool() != school){
+        if(!studyProgram.getDepartment().getFaculty().getSchool().equals(school)){
             throw new IllegalArgumentException("Cannot enroll student in non existing study program!");
+        }
+
+        if(!schoolClass.getStudyProgram().getDepartment().getFaculty().getSchool().getId().equals(school.getId())){
+            throw new IllegalArgumentException("School class not found for school with ID: " + request.getSchoolId());
+        }
+
+        if(!schoolClass.getStudyProgram().equals(studyProgram)){
+            throw new IllegalArgumentException("School class does not belong to the selected study program!");
         }
     }
 }

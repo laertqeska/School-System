@@ -21,7 +21,7 @@ public class Teacher {
             foreignKey = @ForeignKey(name = "fk_teacher_user"))
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id", nullable = false,
         foreignKey = @ForeignKey(name = "fk_teachers_schools")
     )

@@ -82,7 +82,7 @@ public class Student {
     public Student() {
     }
 
-    public Student(User user, School school, StudyProgram studyProgram, String studentId, Date enrollmentDate, StudentStatus status, String personalNumber, Date dateOfBirth, Gender gender, String address) {
+    public Student(User user, School school, StudyProgram studyProgram,SchoolClass schoolClass, String studentId, Date enrollmentDate, StudentStatus status, String personalNumber, Date dateOfBirth, Gender gender, String address) {
         this.user = user;
         this.school = school;
         this.studyProgram = studyProgram;
@@ -95,6 +95,7 @@ public class Student {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.address = address;
+        this.schoolClass = schoolClass;
     }
 
     public Long getId() { return id; }

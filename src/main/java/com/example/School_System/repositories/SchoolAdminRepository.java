@@ -21,9 +21,9 @@ public interface SchoolAdminRepository extends JpaRepository<SchoolAdmin,Long> {
             "JOIN admin.user user " +
             "JOIN admin.school school " +
             "WHERE (:search IS NULL OR " +
-            "LOWER(user.firstName) LIKE LOWER(CONCAT('%',:search,'%')) OR "+
-            "LOWER(user.lastName) LIKE LOWER(CONCAT('%',:search,'%')) OR " +
-            "LOWER(user.email) LIKE LOWER(CONCAT('%',:search,'%')) OR " +
-            "LOWER(school.name) LIKE LOWER(CONCAT('%',:search,'%')))")
+            "LOWER(user.firstName) LIKE CONCAT('%',:search,'%') OR "+
+            "LOWER(user.lastName) LIKE CONCAT('%',:search,'%') OR " +
+            "LOWER(user.email) LIKE CONCAT('%',:search,'%') OR " +
+            "LOWER(school.name) LIKE CONCAT('%',:search,'%'))")
     Page<SchoolAdminModel> findSchoolAdminsWithSearch(Pageable pageable, @Param("search") String search);
 }

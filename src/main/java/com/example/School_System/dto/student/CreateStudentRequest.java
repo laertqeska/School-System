@@ -39,6 +39,8 @@ public class CreateStudentRequest {
     @Size(max = 50, message = "Student ID must not exceed 50 characters")
     private String studentId;
 
+    private Long schoolClassId;
+
     private Date enrollmentDate;
 
     private Integer currentYear = 1;
@@ -61,7 +63,7 @@ public class CreateStudentRequest {
     public CreateStudentRequest(String username, String email, String password,
                                 String firstName, String lastName, String phone,
                                 Long schoolId, Long studyProgramId, String personalNumber,
-                                Date dateOfBirth, Gender gender, String address) {
+                                Date dateOfBirth, Gender gender, String address,Long schoolClassId) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -74,6 +76,7 @@ public class CreateStudentRequest {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.address = address;
+        this.schoolClassId = schoolClassId;
     }
 
     public String getUsername() { return username; }
@@ -126,4 +129,12 @@ public class CreateStudentRequest {
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
+
+    public Long getSchoolClassId() {
+        return schoolClassId;
+    }
+
+    public void setSchoolClassId(Long schoolClassId) {
+        this.schoolClassId = schoolClassId;
+    }
 }

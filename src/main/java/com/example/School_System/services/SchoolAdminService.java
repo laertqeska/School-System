@@ -12,8 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class SchoolAdminService {
     private final SchoolAdminRepository schoolAdminRepository;
@@ -24,6 +22,12 @@ public class SchoolAdminService {
 
     public PaginatedSchoolAdminResponse getAllSchoolAdmin(User loggedUser,int page,int perPage,String search){
         Pageable pageable = PageRequest.of(page,perPage);
+        if(search == null || search.isBlank()){
+            search = "";
+        }
+        else{
+            search = search.toLowerCase();
+        }
         Page<SchoolAdminModel> schoolAdminsPage =  schoolAdminRepository.findSchoolAdminsWithSearch(pageable,search);
         return new PaginatedSchoolAdminResponse(
                 schoolAdminsPage.getContent(),
