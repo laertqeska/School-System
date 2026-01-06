@@ -44,13 +44,6 @@ public class CreateTeacherRequest {
 
     private Long departmentId;
 
-    @NotNull(message = "Subject IDs are required")
-    @Size(min = 1, message = "At least one subject must be assigned")
-    private List<@Valid SubjectAssignment> subjectAssignments;
-
-    public CreateTeacherRequest() {
-    }
-
     public CreateTeacherRequest(String username, String email, String password, String firstName, String lastName, String phone, AcademicTitle academicTitle, String qualification, String employeeId, Boolean isActive, Long departmentId, List<SubjectAssignment> subjectAssignments) {
         this.username = username;
         this.email = email;
@@ -63,7 +56,6 @@ public class CreateTeacherRequest {
         this.employeeId = employeeId;
         this.isActive = isActive;
         this.departmentId = departmentId;
-        this.subjectAssignments = subjectAssignments;
     }
 
     public String getUsername() {
@@ -152,13 +144,5 @@ public class CreateTeacherRequest {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
-    }
-
-    public List<SubjectAssignment> getSubjectAssignments() {
-        return subjectAssignments;
-    }
-
-    public void setSubjectAssignments(List<SubjectAssignment> subjectAssignments) {
-        this.subjectAssignments = subjectAssignments;
     }
 }

@@ -15,10 +15,12 @@ import org.springframework.stereotype.Service;
 public class AcademicYearService {
     private final AcademicYearRepository academicYearRepository;
     private final SchoolAdminRepository schoolAdminRepository;
+    private final UserContextService userContextService;
 
-    public AcademicYearService(AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository) {
+    public AcademicYearService(AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository, UserContextService userContextService) {
         this.academicYearRepository = academicYearRepository;
         this.schoolAdminRepository = schoolAdminRepository;
+        this.userContextService = userContextService;
     }
 
     @Transactional
@@ -31,9 +33,29 @@ public class AcademicYearService {
                 request.getStartDate(),
                 request.getEndDate()
         );
-        academicYear.setIsCurrent(true);
+        academicYear.setIsCurrent(false);
         AcademicYear savedAcademicYear = academicYearRepository.save(academicYear);
 
         return savedAcademicYear.getId();
+    }
+
+    @Transactional
+    public void activateAcademicYear(User loggedUser,Long academicYearId){
+        School school = userContextService.resolveSchool(loggedUser);
+        AcademicYear newCurrentAcademicYear = academicYearRepository.findById(academicYearId)
+                .orElseThrow(()->new EntityNotFoundException("Academic year not found for ID: " + academicYearId));
+        if(!newCurrentAcademicYear.getSchool().getId().equals(school.getId())){
+            throw new IllegalArgumentException("Academic year is not connected with this school!");
+        }
+        if(newCurrentAcademicYear.getIsCurrent()){
+            return;
+        }
+        academicYearRepository.findBySchoolIdAndIsCurrentTrue(school.getId())
+                .ifPresent(current -> {
+                   current.setIsCurrent(true);
+                   academicYearRepository.save(current);
+                });
+        newCurrentAcademicYear.setIsCurrent(true);
+        academicYearRepository.save(newCurrentAcademicYear);
     }
 }

@@ -20,6 +20,7 @@ public class StudentEnrollmentService {
     private final SchoolRepository schoolRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final StudyProgramRepository studyProgramRepository;
+    private final UserContextService userContextService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -27,7 +28,7 @@ public class StudentEnrollmentService {
     @Autowired
     public StudentEnrollmentService(StudentRepository studentRepository,
                                     SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository,
-                                    StudyProgramRepository studyProgramRepository,
+                                    StudyProgramRepository studyProgramRepository, UserContextService userContextService,
                                     UserRepository userRepository,
                                     RoleRepository roleRepository,
                                     PasswordEncoder passwordEncoder) {
@@ -35,14 +36,14 @@ public class StudentEnrollmentService {
         this.schoolRepository = schoolRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.studyProgramRepository = studyProgramRepository;
+        this.userContextService = userContextService;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Long createStudent(CreateStudentRequest request) {
-        School school = schoolRepository.findById(request.getSchoolId())
-                .orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + request.getSchoolId()));
+    public Long createStudent(CreateStudentRequest request,User loggedUser) {
+        School school = userContextService.resolveSchool(loggedUser);
 
         StudyProgram studyProgram = studyProgramRepository.findById(request.getStudyProgramId())
                 .orElseThrow(() -> new EntityNotFoundException("Study program not found with ID: " + request.getStudyProgramId()));
@@ -132,7 +133,7 @@ public class StudentEnrollmentService {
         }
 
         if(!schoolClass.getStudyProgram().getDepartment().getFaculty().getSchool().getId().equals(school.getId())){
-            throw new IllegalArgumentException("School class not found for school with ID: " + request.getSchoolId());
+            throw new IllegalArgumentException("School class not found for school with ID: " + school.getId());
         }
 
         if(!schoolClass.getStudyProgram().equals(studyProgram)){

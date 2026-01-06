@@ -22,7 +22,7 @@ public class TeacherSubject {
     private Teacher teacher;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id", nullable = false,
+    @JoinColumn(name = "study_program_subject_id", nullable = false,
         foreignKey = @ForeignKey(name = "fk_teacher_subject_study_program_subject")
     )
     private StudyProgramSubject studyProgramSubject;

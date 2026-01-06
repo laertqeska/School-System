@@ -65,9 +65,7 @@ public class TeacherEnrollmentService {
         Teacher teacher = createTeacherEntity(request,savedUser,school,department);
         Teacher savedTeacher = teacherRepository.save(teacher);
 
-        assignSubjectsToTeacher(savedTeacher, request.getSubjectAssignments(),school.getId());
-
-        return teacher.getId();
+        return savedTeacher.getId();
     }
 
     private User createUser(CreateTeacherRequest request) {
@@ -113,40 +111,5 @@ public class TeacherEnrollmentService {
                 request.getQualification(),
                 request.getIsActive() != null ? request.getIsActive() : true
         );
-    }
-    //TODO: FIX N+1 queries problem
-
-    private void assignSubjectsToTeacher(Teacher teacher, List<SubjectAssignment> subjectAssignmentsList,Long schoolId) {
-        AcademicYear currentAcademicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(schoolId)
-                .orElseThrow(()-> new EntityNotFoundException("No academic year with this id and is current true"));
-
-        for (SubjectAssignment subjectAssignment : subjectAssignmentsList) {
-            Long studyProgramSubjectId = subjectAssignment.getStudyProgramSubjectId();
-            Long schoolClassId = subjectAssignment.getClassId();
-            StudyProgramSubject studyProgramSubject = studyProgramSubjectRepository.findById(studyProgramSubjectId)
-                    .orElseThrow(() -> new EntityNotFoundException("StudyProgramSubject not found with ID: " + studyProgramSubjectId));
-            if(!studyProgramSubject.getStudyProgram().getDepartment().getFaculty().getSchool().getId().equals(schoolId)){
-                throw new IllegalStateException("Study Program Subject is not from school with id: " + schoolId);
-            }
-            SchoolClass schoolClass = schoolClassRepository.findById(schoolClassId)
-                    .orElseThrow(() -> new EntityNotFoundException("Class not found with ID: " + schoolClassId));
-            if(!schoolClass.getStudyProgram().getDepartment().getFaculty().getSchool().getId().equals(schoolId)){
-                throw new IllegalStateException("Class is not from school with ID: " + schoolId);
-            }
-
-            boolean existingTeacherSubject = teacherSubjectRepository.existsByTeacherAndStudyProgramSubjectAndSchoolClassAndAcademicYear(teacher,studyProgramSubject,schoolClass,currentAcademicYear);
-            if(existingTeacherSubject){
-                throw new IllegalStateException("Teacher subject already exists!");
-            }
-
-            TeacherSubject teacherSubject = new TeacherSubject(
-                    teacher,
-                    studyProgramSubject,
-                    schoolClass,
-                    currentAcademicYear
-            );
-
-            teacherSubjectRepository.save(teacherSubject);
-        }
     }
 }

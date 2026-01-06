@@ -30,9 +30,6 @@ public class CreateStudentRequest {
     @Size(max = 20, message = "Phone number must not exceed 20 characters")
     private String phone;
 
-    @NotNull(message = "School ID is required")
-    private Long schoolId;
-
     @NotNull(message = "Study program ID is required")
     private Long studyProgramId;
 
@@ -62,7 +59,7 @@ public class CreateStudentRequest {
 
     public CreateStudentRequest(String username, String email, String password,
                                 String firstName, String lastName, String phone,
-                                Long schoolId, Long studyProgramId, String personalNumber,
+                                Long studyProgramId, String personalNumber,
                                 Date dateOfBirth, Gender gender, String address,Long schoolClassId) {
         this.username = username;
         this.email = email;
@@ -70,7 +67,6 @@ public class CreateStudentRequest {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
-        this.schoolId = schoolId;
         this.studyProgramId = studyProgramId;
         this.personalNumber = personalNumber;
         this.dateOfBirth = dateOfBirth;
@@ -96,9 +92,6 @@ public class CreateStudentRequest {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-
-    public Long getSchoolId() { return schoolId; }
-    public void setSchoolId(Long schoolId) { this.schoolId = schoolId; }
 
     public Long getStudyProgramId() { return studyProgramId; }
     public void setStudyProgramId(Long studyProgramId) { this.studyProgramId = studyProgramId; }

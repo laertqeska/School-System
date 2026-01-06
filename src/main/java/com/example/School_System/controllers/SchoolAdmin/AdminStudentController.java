@@ -38,7 +38,8 @@ public class AdminStudentController {
 
     @PostMapping("/create")
     public ResponseEntity<Long> createStudent(@RequestBody CreateStudentRequest request){
-        Long createdStudentId = studentEnrollmentService.createStudent(request);
+        User loggedUser = authorizationService.getCurrentUser();
+        Long createdStudentId = studentEnrollmentService.createStudent(request,loggedUser);
         return new ResponseEntity<>(createdStudentId, HttpStatus.OK);
     }
 
