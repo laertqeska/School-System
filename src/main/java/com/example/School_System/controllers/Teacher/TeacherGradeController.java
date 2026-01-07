@@ -44,7 +44,8 @@ public class TeacherGradeController {
 
     @PutMapping("/{gradeId}")
     public ResponseEntity<Void> updateGradeScore(@PathVariable Long gradeId,@RequestBody BigDecimal score){
-        gradeService.updateGrade(gradeId,score);
+        User loggedUser = authorizationService.getCurrentUser();
+        gradeService.updateGrade(gradeId,score,loggedUser);
         return ResponseEntity.noContent().build();
     }
 
