@@ -109,35 +109,16 @@ public class GradeService {
         gradeRepository.save(grade);
     }
 
-    public PaginatedStudentsGradeResponse getGradesForStudent(String username, Integer semester, Integer year, int page, int perPage){
+    public PaginatedStudentsGradeResponse getGradesForStudent(User user, Integer semester, Integer year, int page, int perPage){
         if(page > 0){
             page--;
         }
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new EntityNotFoundException("User not found with username: " + username));
         Student student = studentRepository.findByUserId(user.getId()).orElseThrow(() -> new EntityNotFoundException("Student not found for userId: " + user.getId()));
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<Grade> gradesForStudent = gradeRepository.getGradesForStudent(student.getId(),pageable);
-        List<StudentGradeModel> response = new ArrayList<>();
-
-        for(Grade grade : gradesForStudent.getContent()){
-            if(semester != null && !Objects.equals(grade.getStudyProgramSubject().getSemester(), semester)){
-                continue;
-            }
-            if(year != null && !Objects.equals(grade.getStudyProgramSubject().getYearLevel(),year)){
-                continue;
-            }
-            int credits = grade.getStudyProgramSubject().getCredits();
-            StudentGradeModel studentGradeModel = new StudentGradeModel(
-                    grade.getStudyProgramSubject().getSubject().getName(),
-                    credits,
-                    grade.getScore(),
-                    grade.getMaxScore()
-            );
-            response.add(studentGradeModel);
-        }
+        Page<StudentGradeModel> gradesForStudent = gradeRepository.getGradesForStudent(student.getId(),pageable,semester,year);
 
         return new PaginatedStudentsGradeResponse(
-                response,
+                gradesForStudent.getContent(),
                 page + 1,
                 perPage,
                 gradesForStudent.getTotalElements(),

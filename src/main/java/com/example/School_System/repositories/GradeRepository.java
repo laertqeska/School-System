@@ -1,5 +1,6 @@
 package com.example.School_System.repositories;
 
+import com.example.School_System.dto.grade.StudentGradeModel;
 import com.example.School_System.entities.Grade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,11 @@ public interface GradeRepository extends JpaRepository<Grade,Long> {
                           @Param("score") BigDecimal score,
                           Pageable pageable);
 
-    @Query("SELECT g FROM Grade g " +
-            "WHERE g.student.id = :studentId ")
-    Page<Grade> getGradesForStudent(@Param("studentId") Long studentId,Pageable pageable);
+    @Query("SELECT new com.example.School_System.dto.grade.StudentGradeModel(sps.subject.name,sps.credits,g.score,g.maxScore) FROM Grade g " +
+            "JOIN g.studyProgramSubject sps " +
+            "WHERE g.student.id = :studentId " +
+            "AND (:semester IS NULL OR sps.semester = :semester)" +
+            "AND (:year IS NULL OR sps.yearLevel = :year)")
+    Page<StudentGradeModel> getGradesForStudent(@Param("studentId") Long studentId, Pageable pageable, @Param("semester") Integer semester, @Param("year") Integer year);
 
 }

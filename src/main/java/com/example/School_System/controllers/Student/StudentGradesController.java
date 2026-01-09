@@ -1,6 +1,8 @@
 package com.example.School_System.controllers.Student;
 
 import com.example.School_System.dto.grade.PaginatedStudentsGradeResponse;
+import com.example.School_System.entities.User;
+import com.example.School_System.services.AuthorizationService;
 import com.example.School_System.services.GradeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/student/grades")
-@PreAuthorize("hasAnyRole('SCHOOL_ADMIN,STUDENT')")
+@PreAuthorize("hasRole('STUDENT')")
 public class StudentGradesController {
     private final GradeService gradeService;
+    private final AuthorizationService authorizationService;
 
-    public StudentGradesController(GradeService gradeService) {
+    public StudentGradesController(GradeService gradeService, AuthorizationService authorizationService) {
         this.gradeService = gradeService;
+        this.authorizationService = authorizationService;
     }
 
     @GetMapping
@@ -26,8 +30,8 @@ public class StudentGradesController {
             @RequestParam(required = false) Integer semester,
             @RequestParam(required = false) Integer year
     ){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PaginatedStudentsGradeResponse response =  gradeService.getGradesForStudent(authentication.getName(), semester,year,page,perPage);
+        User loggedUser = authorizationService.getCurrentUser();
+        PaginatedStudentsGradeResponse response =  gradeService.getGradesForStudent(loggedUser, semester,year,page,perPage);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
