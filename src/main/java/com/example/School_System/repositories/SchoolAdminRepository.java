@@ -1,6 +1,7 @@
 package com.example.School_System.repositories;
 
 import com.example.School_System.dto.schoolAdmin.SchoolAdminModel;
+import com.example.School_System.entities.School;
 import com.example.School_System.entities.SchoolAdmin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

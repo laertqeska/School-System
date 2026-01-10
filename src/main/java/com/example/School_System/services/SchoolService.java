@@ -105,8 +105,9 @@ public class SchoolService {
         schoolRepository.save(school);
     }
 
-    public void deleteSchool(Long schoolId){
+    public void deleteSchool(Long schoolId,User loggedUser){
         School school = schoolRepository.findById(schoolId).orElseThrow(()->new RuntimeException("School with ID" + schoolId + "not found!!!"));
-        schoolRepository.delete(school);
+        school.delete(loggedUser);
+        schoolRepository.save(school);
     }
 }

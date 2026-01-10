@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/schools")
+@RequestMapping("/api/super-admin/schools")
 @PreAuthorize("hasRole('SUPER_ADMIN')")
 public class SchoolController {
     @Autowired
@@ -50,7 +50,8 @@ public class SchoolController {
 
     @DeleteMapping("/{schoolId}")
     public ResponseEntity<Void> deleteSchool(@PathVariable Long schoolId){
-        schoolService.deleteSchool(schoolId);
+        User loggedUser = authorizationService.getCurrentUser();
+        schoolService.deleteSchool(schoolId,loggedUser);
         return ResponseEntity.ok().build();
     }
 }

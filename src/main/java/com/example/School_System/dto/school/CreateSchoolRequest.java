@@ -10,7 +10,6 @@ public class CreateSchoolRequest {
     private String city;
     private String phone;
     private String email;
-    private Long rectorId;
     private String licenseNumber;
     private String postalCode;
     private String websiteLink;
@@ -73,14 +72,6 @@ public class CreateSchoolRequest {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Long getRectorId() {
-        return rectorId;
-    }
-
-    public void setRectorId(Long rectorId) {
-        this.rectorId = rectorId;
     }
 
     public String getLicenseNumber() {

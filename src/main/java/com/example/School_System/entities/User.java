@@ -2,8 +2,8 @@ package com.example.School_System.entities;
 
 import com.example.School_System.entities.valueObjects.RoleName;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+@Filter(name = "deletedFilter",condition="is_deleted = :isDeleted")
+public class User extends SoftDeletableEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

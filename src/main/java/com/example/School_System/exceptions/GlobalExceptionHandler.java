@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -71,7 +72,7 @@ public class GlobalExceptionHandler {
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
-                        error -> error.getField(),
+                        FieldError::getField,
                         error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value",
                         (existing, replacement) -> existing // Keep first error message if duplicate field
                 ));

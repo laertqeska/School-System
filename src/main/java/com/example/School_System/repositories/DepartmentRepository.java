@@ -14,5 +14,7 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     @Query("SELECT new com.example.School_System.dto.department.DepartmentModelResponse(d.id,d.name) " +
             "FROM Department d " +
             "WHERE d.faculty.id = :facultyId")
-    List<DepartmentModelResponse> findByFacultyId(@Param("facultyId") Long facultyId);
+    List<DepartmentModelResponse> findDepartmentModelsByFacultyId(@Param("facultyId") Long facultyId);
+
+    List<Department> findByFacultyId(Long facultyId);
 }

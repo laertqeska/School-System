@@ -5,6 +5,7 @@ import com.example.School_System.dto.teacher.CreateTeacherRequest;
 import com.example.School_System.dto.teacher.PaginatedTeacherResponse;
 import com.example.School_System.dto.teacher.TeacherDetailsResponse;
 import com.example.School_System.dto.teacher.UpdateTeacherRequest;
+import com.example.School_System.entities.User;
 import com.example.School_System.services.AuthorizationService;
 import com.example.School_System.services.TeacherEnrollmentService;
 import com.example.School_System.services.TeacherService;
@@ -64,7 +65,8 @@ public class AdminTeacherController {
     public ResponseEntity<Void> deleteTeacher(@PathVariable Long teacherId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         authorizationService.validateAdminAccessToTeacher(authentication,teacherId);
-        teacherService.deleteTeacher(teacherId);
+        User loggedUser = authorizationService.getCurrentUser();
+        teacherService.deleteTeacher(teacherId,loggedUser);
         return ResponseEntity.ok().build();
     }
 }

@@ -3,8 +3,9 @@ package com.example.School_System.entities;
 import com.example.School_System.entities.valueObjects.StudentStatus;
 import com.example.School_System.entities.valueObjects.Gender;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -13,7 +14,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "students")
-public class Student {
+@Filter(name = "deletedFilter",condition="is_deleted = :isDeleted")
+public class Student extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

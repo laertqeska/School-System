@@ -2,6 +2,7 @@ package com.example.School_System.entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,8 @@ import java.util.Set;
 @Entity
 @Table(name = "study_program_subjects",
         uniqueConstraints = @UniqueConstraint(columnNames = {"study_program_id", "subject_id"}))
-public class StudyProgramSubject {
+@Filter(name = "deletedFilter",condition = "is_deleted = :isDeleted")
+public class StudyProgramSubject extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

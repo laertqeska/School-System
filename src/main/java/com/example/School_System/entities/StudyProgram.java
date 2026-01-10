@@ -2,8 +2,9 @@ package com.example.School_System.entities;
 
 import com.example.School_System.entities.valueObjects.DegreeLevel;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -11,7 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "study_programs")
-public class StudyProgram {
+@Filter(name = "deletedFilter",condition="is_deleted = :isDeleted")
+public class StudyProgram extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

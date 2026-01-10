@@ -34,4 +34,11 @@ public class DeanDepartmentsController {
         List<DepartmentModelResponse> response = departmentService.getDepartments(user);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+    @DeleteMapping("/{departmentId}")
+    public ResponseEntity<Void> deleteDepartment(@PathVariable Long departmentId){
+        User user = authorizationService.getCurrentUser();
+        departmentService.deleteDepartment(user,departmentId);
+        return ResponseEntity.noContent().build();
+    }
 }

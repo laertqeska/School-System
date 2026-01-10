@@ -3,6 +3,7 @@ package com.example.School_System.entities;
 import com.example.School_System.entities.valueObjects.ApprovalStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "faculties")
-public class Faculty {
+@Filter(name = "deletedFilter",condition = "is_deleted = isDeleted")
+public class Faculty extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

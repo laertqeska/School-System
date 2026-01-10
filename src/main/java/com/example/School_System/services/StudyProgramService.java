@@ -76,7 +76,7 @@ public class StudyProgramService {
         }
 
         Pageable pageable = PageRequest.of(page, perPage);
-        Page<StudyProgram> studyProgramPage = studyProgramRepository.getStudyProgramsForFaculty(
+        Page<StudyProgram> studyProgramPage = studyProgramRepository.getPaginatedStudyProgramsForFaculty(
                 pageable,
                 faculty.getId(),
                 studyProgramName,

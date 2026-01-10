@@ -59,7 +59,8 @@ public class AdminStudentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id){
-        studentService.deleteStudent(id);
+        User loggedUser = authorizationService.getCurrentUser();
+        studentService.deleteStudent(id,loggedUser);
         return ResponseEntity.ok().build();
     }
 }

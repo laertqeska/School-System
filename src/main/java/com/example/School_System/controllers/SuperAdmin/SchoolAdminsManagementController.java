@@ -49,7 +49,8 @@ public class SchoolAdminsManagementController {
 
     @DeleteMapping("/{adminId}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable Long adminId){
-        schoolAdminService.deleteAdmin(adminId);
+        User loggedUser = authorizationService.getCurrentUser();
+        schoolAdminService.deleteAdmin(adminId,loggedUser);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

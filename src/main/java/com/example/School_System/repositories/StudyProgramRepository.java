@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface StudyProgramRepository extends JpaRepository<StudyProgram,Long> {
@@ -25,11 +27,14 @@ public interface StudyProgramRepository extends JpaRepository<StudyProgram,Long>
             "WHERE d.faculty.id = :facultyId AND " +
             "(:studyProgramName IS NULL OR LOWER(sp.name) LIKE LOWER(CONCAT('%', :studyProgramName, '%'))) AND " +
             "(:degreeLevel IS NULL OR LOWER(sp.degreeLevel) = LOWER(:degreeLevel))")
-    Page<StudyProgram> getStudyProgramsForFaculty(
+    Page<StudyProgram> getPaginatedStudyProgramsForFaculty(
             Pageable pageable,
             @Param("facultyId") Long facultyId,
             @Param("studyProgramName") String studyProgramName,
             @Param("degreeLevel") String degreeLevel
     );
 
+    List<StudyProgram> findByDepartmentId(Long departmentId);
+
+    List<StudyProgram> findByDepartmentFacultyId(Long facultyId);
 }

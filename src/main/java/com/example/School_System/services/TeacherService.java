@@ -27,13 +27,15 @@ public class TeacherService {
     private final SchoolClassRepository schoolClassRepository;
     private final SchoolAdminRepository schoolAdminRepository;
     private final StudyProgramSubjectRepository studyProgramSubjectRepository;
+    private final UserRepository userRepository;
 
-    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository) {
+    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, UserRepository userRepository) {
         this.teacherRepository = teacherRepository;
         this.subjectRepository = subjectRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.schoolAdminRepository = schoolAdminRepository;
         this.studyProgramSubjectRepository = studyProgramSubjectRepository;
+        this.userRepository = userRepository;
     }
 
     public PaginatedTeacherResponse listTeachers(Authentication auth, int page, int perPage, String search){
@@ -121,9 +123,13 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
-    public void deleteTeacher(Long teacherId){
+    public void deleteTeacher(Long teacherId,User loggedUser){
         Teacher teacherToDelete = teacherRepository.findById(teacherId).orElseThrow(()-> new EntityNotFoundException("Teacher with ID: " + teacherId + " does not exist!!!"));
-        teacherRepository.delete(teacherToDelete);
+        teacherToDelete.delete(loggedUser);
+        teacherRepository.save(teacherToDelete);
+        User user = teacherToDelete.getUser();
+        user.delete(loggedUser);
+        userRepository.save(user);
     }
 
 

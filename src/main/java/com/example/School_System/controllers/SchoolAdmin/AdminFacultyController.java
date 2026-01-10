@@ -34,4 +34,11 @@ public class AdminFacultyController {
         PaginatedFacultyResponse response = facultyService.getAllFaculties(user,search,page,perPage);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+    @DeleteMapping("/{facultyId}")
+    public ResponseEntity<Void> deleteFaculty(@PathVariable Long facultyId){
+        User loggedUser = authorizationService.getCurrentUser();
+        facultyService.deleteFaculty(loggedUser,facultyId);
+        return ResponseEntity.noContent().build();
+    }
 }

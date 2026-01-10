@@ -2,13 +2,15 @@ package com.example.School_System.entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "school_admins")
-public class SchoolAdmin {
+@Filter(name="deletedFilter",condition = "is_deleted = :isDeleted")
+public class SchoolAdmin extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

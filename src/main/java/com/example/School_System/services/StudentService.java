@@ -86,8 +86,12 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public void deleteStudent(Long studentId){
+    public void deleteStudent(Long studentId,User loggedUser){
         Student student = studentRepository.findById(studentId).orElseThrow(()->new RuntimeException("Student with ID" + studentId + "not found!!!"));
-        studentRepository.delete(student);
+        student.delete(loggedUser);
+        studentRepository.save(student);
+        User user = student.getUser();
+        user.delete(loggedUser);
+        userRepository.save(user);
     }
 }

@@ -6,7 +6,9 @@ import com.example.School_System.dto.schoolAdmin.SchoolAdminModel;
 import com.example.School_System.entities.SchoolAdmin;
 import com.example.School_System.entities.User;
 import com.example.School_System.repositories.SchoolAdminRepository;
+import com.example.School_System.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +17,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class SchoolAdminService {
     private final SchoolAdminRepository schoolAdminRepository;
+    private final UserRepository userRepository;
 
-    public SchoolAdminService(SchoolAdminRepository schoolAdminRepository) {
+    public SchoolAdminService(SchoolAdminRepository schoolAdminRepository, UserRepository userRepository) {
         this.schoolAdminRepository = schoolAdminRepository;
+        this.userRepository = userRepository;
     }
 
     public PaginatedSchoolAdminResponse getAllSchoolAdmin(User loggedUser,int page,int perPage,String search){
@@ -50,9 +54,14 @@ public class SchoolAdminService {
         );
     }
 
-    public void deleteAdmin(Long schoolAdminId){
+    @Transactional
+    public void deleteAdmin(Long schoolAdminId,User loggedUser){
         SchoolAdmin schoolAdmin = schoolAdminRepository.findById(schoolAdminId).orElseThrow(()-> new EntityNotFoundException("School admin not found with ID: " + schoolAdminId));
-        schoolAdminRepository.delete(schoolAdmin);
+        schoolAdmin.delete(loggedUser);
+        schoolAdminRepository.save(schoolAdmin);
+        User user = schoolAdmin.getUser();
+        user.delete(loggedUser);
+        userRepository.save(loggedUser);
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.School_System.entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
@@ -12,7 +13,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "departments")
-public class Department {
+@Filter(name = "deletedFilter",condition = "is_deleted = isDeleted")
+public class Department extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -68,6 +70,18 @@ public class Department {
     public Boolean getIsActive() { return isActive; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public Set<StudyProgram> getStudyPrograms() {
+        return studyPrograms;
+    }
+
+    public Set<Teacher> getTeachers() {
+        return teachers;
+    }
 
     public User getCreatedBy() {
         return createdBy;
