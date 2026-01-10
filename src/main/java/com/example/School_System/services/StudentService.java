@@ -11,6 +11,7 @@ import com.example.School_System.entities.User;
 import com.example.School_System.repositories.StudentRepository;
 import com.example.School_System.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -86,6 +87,7 @@ public class StudentService {
         studentRepository.save(student);
     }
 
+    @Transactional
     public void deleteStudent(Long studentId,User loggedUser){
         Student student = studentRepository.findById(studentId).orElseThrow(()->new RuntimeException("Student with ID" + studentId + "not found!!!"));
         student.delete(loggedUser);

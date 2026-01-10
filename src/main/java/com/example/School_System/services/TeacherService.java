@@ -8,6 +8,7 @@ import com.example.School_System.dto.teacher.UpdateTeacherRequest;
 import com.example.School_System.entities.*;
 import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -123,6 +124,7 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
+    @Transactional
     public void deleteTeacher(Long teacherId,User loggedUser){
         Teacher teacherToDelete = teacherRepository.findById(teacherId).orElseThrow(()-> new EntityNotFoundException("Teacher with ID: " + teacherId + " does not exist!!!"));
         teacherToDelete.delete(loggedUser);
