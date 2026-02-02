@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/dean/classes")
 @PreAuthorize("hasRole('DEAN')")
 public class DeanClassesController {
-    private SchoolClassService schoolClassService;
-    private AuthorizationService authorizationService;
+    private final SchoolClassService schoolClassService;
+    private final AuthorizationService authorizationService;
 
     public DeanClassesController(SchoolClassService schoolClassService,AuthorizationService authorizationService){
         this.authorizationService = authorizationService;

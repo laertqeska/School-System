@@ -35,7 +35,8 @@ public class SubjectService {
             throw new AccessDeniedException("Only deans can create subjects!");
         }
         School school = userContextService.resolveSchool(dean);
-        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
         if(!department.getFaculty().getSchool().getId().equals(school.getId())){
             throw new AccessDeniedException("Department does not belong to your school");
         }
@@ -54,7 +55,13 @@ public class SubjectService {
 
 
 
-    public List<SchoolAdminSubjectModel> getSubjectsForDepartment(Long departmentId){
+    public List<SchoolAdminSubjectModel> getSubjectsForDepartment(User user,Long departmentId){
+        School school = userContextService.resolveSchool(user);
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(()-> new EntityNotFoundException("Department does not exist with ID: " + departmentId));
+        if(!department.getFaculty().getSchool().getId().equals(school.getId())){
+            throw new IllegalStateException("There is no department with ID: " + departmentId + " in this school!");
+        }
         return subjectRepository.findByDepartment(departmentId);
     }
 }

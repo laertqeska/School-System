@@ -29,8 +29,7 @@ public class SchoolClassService {
         this.userContextService = userContextService;
     }
 
-    public List<TeacherClassesModel> getClassesForTeacher(Authentication auth){
-        User loggedUser = (User) auth.getPrincipal();
+    public List<TeacherClassesModel> getClassesForTeacher(User loggedUser){
         Teacher teacher = teacherRepository.findByUserId(loggedUser.getId()).orElseThrow(() -> new EntityNotFoundException("Teacher not found with user id: " + loggedUser.getId()));
         return schoolClassRepository.getClassesForTeacher(teacher.getId());
     }
@@ -41,8 +40,14 @@ public class SchoolClassService {
         }
         School school = userContextService.resolveSchool(dean);
         Long schoolId = school.getId();
-        StudyProgram studyProgram =  studyProgramRepository.findById(request.getStudyProgramId()).orElseThrow(()-> new EntityNotFoundException("StudyProgram not found with ID: " + request.getStudyProgramId()));
-        AcademicYear academicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(schoolId).orElseThrow(() -> new EntityNotFoundException("Academic year not found!"));
+        StudyProgram studyProgram =  studyProgramRepository.findById(request.getStudyProgramId())
+                .orElseThrow(()-> new EntityNotFoundException("StudyProgram not found with ID: " + request.getStudyProgramId()));
+        AcademicYear academicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(schoolId)
+                .orElseThrow(() -> new EntityNotFoundException("Academic year not found!"));
+
+        if(!studyProgram.getDepartment().getFaculty().getSchool().getId().equals(schoolId)){
+            throw new AccessDeniedException("Study Program does not belong to your school!!!");
+        }
 
         SchoolClass schoolClass = new SchoolClass(
                 studyProgram,
@@ -54,5 +59,7 @@ public class SchoolClassService {
         schoolClassRepository.save(schoolClass);
         return schoolClass.getId();
     }
+
+
 
 }

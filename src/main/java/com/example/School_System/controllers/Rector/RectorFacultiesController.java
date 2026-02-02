@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/rector/faculties")
 public class RectorFacultiesController {
-    private RectorService rectorService;
-    private AuthorizationService authorizationService;
+    private final RectorService rectorService;
+    private final AuthorizationService authorizationService;
 
     public RectorFacultiesController(RectorService rectorService,AuthorizationService authorizationService){
         this.rectorService = rectorService;

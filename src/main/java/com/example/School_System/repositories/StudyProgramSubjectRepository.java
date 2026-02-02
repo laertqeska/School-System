@@ -1,5 +1,6 @@
 package com.example.School_System.repositories;
 
+import com.example.School_System.dto.studyProgramSubject.TeacherStudyProgramSubjectModel;
 import com.example.School_System.entities.StudyProgramSubject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ public interface StudyProgramSubjectRepository extends JpaRepository<StudyProgra
     @Query("SELECT sps " +
             "FROM StudyProgramSubject sps " +
             "WHERE sps.studyProgram.department = :departmentId")
-    public List<StudyProgramSubject> findStudyProgramSubjectByDepartment(@Param("departmentId") Long departmentId);
+    List<StudyProgramSubject> findStudyProgramSubjectByDepartment(@Param("departmentId") Long departmentId);
 
-    public List<StudyProgramSubject> findByStudyProgramDepartmentFacultyId(Long facultyId);
+    List<StudyProgramSubject> findByStudyProgramDepartmentFacultyId(Long facultyId);
 }

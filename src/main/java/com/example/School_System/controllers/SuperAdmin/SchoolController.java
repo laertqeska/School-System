@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/super-admin/schools")
 @PreAuthorize("hasRole('SUPER_ADMIN')")
 public class SchoolController {
-    @Autowired
-    private SchoolService schoolService;
+    private final SchoolService schoolService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private AuthorizationService authorizationService;
+    public SchoolController(SchoolService schoolService, AuthorizationService authorizationService) {
+        this.schoolService = schoolService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<PaginatedSchoolResponse> getAllSchools(@RequestParam int page, @RequestParam int perPage){

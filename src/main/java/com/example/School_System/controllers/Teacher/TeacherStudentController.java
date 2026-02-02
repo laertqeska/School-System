@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/teacher/students")
 @PreAuthorize("hasRole('TEACHER')")
 public class TeacherStudentController {
-    @Autowired
-    private StudentService studentService;
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final StudentService studentService;
+    private final AuthorizationService authorizationService;
+
+    public TeacherStudentController(StudentService studentService, AuthorizationService authorizationService) {
+        this.studentService = studentService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping("/{studentId}")
     public ResponseEntity<StudentDetailsResponse> getStudent(@PathVariable Long studentId){

@@ -16,10 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/departments/{departmentId}/study-programs")
 @PreAuthorize("hasRole('SCHOOL_ADMIN')")
 public class AdminStudyProgramController {
-    @Autowired
-    private StudyProgramService studyProgramService;
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final StudyProgramService studyProgramService;
+    private final AuthorizationService authorizationService;
+
+    public AdminStudyProgramController(StudyProgramService studyProgramService, AuthorizationService authorizationService) {
+        this.studyProgramService = studyProgramService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<PaginatedStudyProgramResponse> getStudyPrograms(@PathVariable Long departmentId, @RequestParam int page, @RequestParam int perPage, @RequestParam(required = false) String studyProgramName, @RequestParam(required = false) DegreeLevel degreeLevel){

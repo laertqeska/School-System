@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/dean/teachers")
 @PreAuthorize("hasRole('DEAN')")
 public class DeanTeacherController {
-    @Autowired
-    private TeacherService teacherService;
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final TeacherService teacherService;
+    private final AuthorizationService authorizationService;
+
+    public DeanTeacherController(TeacherService teacherService, AuthorizationService authorizationService) {
+        this.teacherService = teacherService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<PaginatedTeacherResponse> getTeachers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int perPage, @RequestParam(required = false) String search){

@@ -20,14 +20,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/students")
 @PreAuthorize("hasRole('SCHOOL_ADMIN')")
 public class AdminStudentController {
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
+    private final StudentEnrollmentService studentEnrollmentService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private StudentEnrollmentService studentEnrollmentService;
-
-    @Autowired
-    private AuthorizationService authorizationService;
+    public AdminStudentController(StudentService studentService, StudentEnrollmentService studentEnrollmentService, AuthorizationService authorizationService) {
+        this.studentService = studentService;
+        this.studentEnrollmentService = studentEnrollmentService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<PaginatedStudentResponse> getStudents(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue="10") int perPage){
@@ -53,7 +54,8 @@ public class AdminStudentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateStudent(@PathVariable Long id, @RequestBody UpdateStudentRequest request){
-        studentService.updateStudent(request,id);
+        User loggedUser = authorizationService.getCurrentUser();
+        studentService.updateStudent(loggedUser,request,id);
         return ResponseEntity.noContent().build();
     }
 

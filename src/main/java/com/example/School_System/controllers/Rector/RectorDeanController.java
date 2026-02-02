@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("hasRole('RECTOR')")
 public class RectorDeanController {
     private final RectorService rectorService;
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
 
     public RectorDeanController(RectorService rectorService,AuthorizationService authorizationService) {
         this.rectorService = rectorService;

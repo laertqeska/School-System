@@ -1,6 +1,5 @@
 package com.example.School_System.services;
 
-import com.example.School_System.dto.mappers.TeacherMapper;
 import com.example.School_System.dto.studyProgramSubject.CreateStudyProgramSubjectRequest;
 import com.example.School_System.dto.studyProgramSubject.TeacherStudyProgramSubjectModel;
 import com.example.School_System.entities.*;
@@ -8,7 +7,6 @@ import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,13 +17,15 @@ public class StudyProgramSubjectService {
     private final StudyProgramSubjectRepository studyProgramSubjectRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final TeacherSubjectRepository teacherSubjectRepository;
 
-    public StudyProgramSubjectService(SubjectRepository subjectRepository, StudyProgramRepository studyProgramRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, StudentRepository studentRepository, TeacherRepository teacherRepository) {
+    public StudyProgramSubjectService(SubjectRepository subjectRepository, StudyProgramRepository studyProgramRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, TeacherSubjectRepository teacherSubjectRepository) {
         this.subjectRepository = subjectRepository;
         this.studyProgramRepository = studyProgramRepository;
         this.studyProgramSubjectRepository = studyProgramSubjectRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.teacherSubjectRepository = teacherSubjectRepository;
     }
 
     public Long createStudyProgramSubject(Long studyProgramId, CreateStudyProgramSubjectRequest request,User dean){
@@ -50,15 +50,8 @@ public class StudyProgramSubjectService {
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not found with userId: " + userId));
 
         Set<TeacherSubject> teacherSubjects = teacher.getTeacherSubjects();
-        List<TeacherStudyProgramSubjectModel> subjectsModel = new ArrayList<>();
-        for(TeacherSubject teacherSubject : teacherSubjects){
-            String studyProgramSubjectName = TeacherMapper.getFullStudyProgramSubjectName(teacherSubject.getStudyProgramSubject());
-            TeacherStudyProgramSubjectModel subjectModel = new TeacherStudyProgramSubjectModel(
-                    teacherSubject.getStudyProgramSubject().getId(),
-                    studyProgramSubjectName
-            );
-            subjectsModel.add(subjectModel);
-        }
+        List<TeacherStudyProgramSubjectModel> subjectsModel = teacherSubjectRepository.getTeacherStudyProgramSubjectModel(teacher.getId());
+
         return subjectsModel;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.School_System.repositories;
 
 import com.example.School_System.dto.student.StudentModel;
+import com.example.School_System.entities.School;
 import com.example.School_System.entities.Student;
 import com.example.School_System.entities.valueObjects.StudentStatus;
 import org.springframework.data.domain.Page;
@@ -48,4 +49,11 @@ public interface StudentRepository extends JpaRepository<Student,Long> {
     long countBySchool_Id(Long schoolId);
 
     Optional<Student> findByUserId(Long userId);
+
+    @Query("SELECT school " +
+            "FROM Student s " +
+            "JOIN s.user user " +
+            "JOIN s.school school " +
+            "WHERE user.id = :userId")
+    Optional<School> findSchoolForStudent(@Param("userId") Long userId);
 }

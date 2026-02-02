@@ -6,8 +6,10 @@ import com.example.School_System.dto.student.StudentDetailsResponse;
 import com.example.School_System.dto.student.StudentModel;
 import com.example.School_System.dto.mappers.StudentMapper;
 import com.example.School_System.entities.School;
+import com.example.School_System.entities.SchoolAdmin;
 import com.example.School_System.entities.Student;
 import com.example.School_System.entities.User;
+import com.example.School_System.repositories.SchoolAdminRepository;
 import com.example.School_System.repositories.StudentRepository;
 import com.example.School_System.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,11 +33,13 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
     private final UserContextService userContextService;
+    private final SchoolAdminRepository schoolAdminRepository;
 
-    public StudentService(StudentRepository studentRepository, UserRepository userRepository, UserContextService userContextService) {
+    public StudentService(StudentRepository studentRepository, UserRepository userRepository, UserContextService userContextService, SchoolAdminRepository schoolAdminRepository) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
         this.userContextService = userContextService;
+        this.schoolAdminRepository = schoolAdminRepository;
     }
 
     public PaginatedStudentResponse listAllStudentsForSchoolAdmin(User schoolAdmin,int page, int perPage){
@@ -75,14 +79,19 @@ public class StudentService {
                 );
     }
 
-    public StudentDetailsResponse getStudentDetailsForStudent(String username){
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("User with username: " + username + " does not exist!"));
+    public StudentDetailsResponse getStudentDetailsForStudent(User user){
         Student student = studentRepository.findByUserId(user.getId()).orElseThrow(() -> new EntityNotFoundException("Student with userId: " + user.getId() + " does not exist!" ));
         return getStudentDetails(student.getId());
     }
 
-    public void updateStudent(UpdateStudentRequest request, Long studentId){
+    public void updateStudent(User user,UpdateStudentRequest request, Long studentId){
+        Long userId = user.getId();
+        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(userId)
+                .orElseThrow(()-> new EntityNotFoundException("School admin not found for user id!"));
         Student student = studentRepository.findById(studentId).orElseThrow(()->new RuntimeException("School with ID" + studentId + "not found!!!"));
+        if(!schoolAdmin.getSchool().getId().equals(student.getSchool().getId())){
+            throw new AccessDeniedException("You do not have access to this student!!!");
+        }
         StudentMapper.updateStudentFromRequest(student,request);
         studentRepository.save(student);
     }
@@ -90,6 +99,13 @@ public class StudentService {
     @Transactional
     public void deleteStudent(Long studentId,User loggedUser){
         Student student = studentRepository.findById(studentId).orElseThrow(()->new RuntimeException("Student with ID" + studentId + "not found!!!"));
+        if (student.getDeleted()) {
+            throw new IllegalStateException("Student already deleted!");
+        }
+        School school = userContextService.resolveSchool(loggedUser);
+        if(!school.getId().equals(student.getSchool().getId())){
+            throw new AccessDeniedException("You do not have permission to delete this student!");
+        }
         student.delete(loggedUser);
         studentRepository.save(student);
         User user = student.getUser();

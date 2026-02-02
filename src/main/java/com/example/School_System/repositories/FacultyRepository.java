@@ -12,12 +12,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface FacultyRepository extends JpaRepository<Faculty,Long> {
      @Query("SELECT new com.example.School_System.dto.faculty.FacultyModel(f.id, f.name) " +
              "FROM Faculty f " +
              "WHERE f.school.id = :schoolId " +
-             "AND (COALESCE(:search, '') = '' OR LOWER(f.name) LIKE LOWER(CONCAT('%', :search, '%')))")
+             "AND (:search IS NULL OR LOWER(f.name) LIKE LOWER(CONCAT('%',:search,'%')))")
      Page<FacultyModel> getFaculties(
              Pageable pageable,
              @Param("search") String search,
@@ -30,4 +32,10 @@ public interface FacultyRepository extends JpaRepository<Faculty,Long> {
              "LEFT JOIN f.dean d " +
              "WHERE f.school.id = :schoolId AND f.approvalStatus = :status")
      Page<RectorFacultiesModel> getFacultiesForRector(Pageable pageable, Long schoolId, @Param("status") ApprovalStatus status);
+
+
+     @Query("SELECT f.school " +
+             "FROM Faculty f " +
+             "WHERE f.dean.id = :userId")
+     Optional<School> findSchoolForDean(@Param("userId") Long userId);
 }

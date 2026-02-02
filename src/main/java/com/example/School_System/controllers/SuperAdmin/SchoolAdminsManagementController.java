@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/super-admin/admins")
 @PreAuthorize("hasRole('SUPER_ADMIN')")
 public class SchoolAdminsManagementController {
-    @Autowired
-    private SchoolAdminCreationService schoolAdminCreationService;
+    private final SchoolAdminCreationService schoolAdminCreationService;
+    private final SchoolAdminService schoolAdminService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private SchoolAdminService schoolAdminService;
-
-    @Autowired
-    private AuthorizationService authorizationService;
+    public SchoolAdminsManagementController(SchoolAdminCreationService schoolAdminCreationService, SchoolAdminService schoolAdminService, AuthorizationService authorizationService) {
+        this.schoolAdminCreationService = schoolAdminCreationService;
+        this.schoolAdminService = schoolAdminService;
+        this.authorizationService = authorizationService;
+    }
 
     @PostMapping
     public ResponseEntity<Long> createAdmin(@RequestBody CreateSchoolAdminRequest request){

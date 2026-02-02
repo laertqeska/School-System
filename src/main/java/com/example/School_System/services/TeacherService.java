@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -28,50 +29,40 @@ public class TeacherService {
     private final SchoolClassRepository schoolClassRepository;
     private final SchoolAdminRepository schoolAdminRepository;
     private final StudyProgramSubjectRepository studyProgramSubjectRepository;
+    private final TeacherSubjectRepository teacherSubjectRepository;
     private final UserRepository userRepository;
+    private final UserContextService userContextService;
 
-    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, UserRepository userRepository) {
+    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, TeacherSubjectRepository teacherSubjectRepository, UserRepository userRepository, UserContextService userContextService) {
         this.teacherRepository = teacherRepository;
         this.subjectRepository = subjectRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.schoolAdminRepository = schoolAdminRepository;
         this.studyProgramSubjectRepository = studyProgramSubjectRepository;
+        this.teacherSubjectRepository = teacherSubjectRepository;
         this.userRepository = userRepository;
+        this.userContextService = userContextService;
     }
 
-    public PaginatedTeacherResponse listTeachers(Authentication auth, int page, int perPage, String search){
-        User loggedUser = (User) auth.getPrincipal();
-        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(loggedUser.getId())
-                .orElseThrow(()-> new EntityNotFoundException("School Admin not found for user id : " + loggedUser.getId()));
+    public PaginatedTeacherResponse listTeachers(User loggedUser, int page, int perPage, String search){
+        Long userId = loggedUser.getId();
+        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(userId)
+                .orElseThrow(()-> new EntityNotFoundException("School Admin not found for user id : " + userId));
         Long schoolId = schoolAdmin.getSchool().getId();
         if(page > 0) page--;
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<Teacher> teacherPage = null;
         if(search == null || search.isEmpty()){
-            teacherPage =  teacherRepository.findBySchoolId(pageable,schoolId);
-        }
-        else{
-            teacherPage = teacherRepository.findTeachersWithSearch(search,schoolId,pageable);
-        }
-        List<TeacherModel> response = new ArrayList<>();
-        for(Teacher teacher : teacherPage.getContent()){
-            User teacherUser = teacher.getUser();
-            TeacherModel teacherModel = new TeacherModel(
-                    teacherUser.getFirstName(),
-                    teacherUser.getLastName(),
-                    teacherUser.getEmail(),
-                    teacher.getDepartment().getName(),
-                    teacher.getAcademicTitle().toString()
-            );
-            response.add(teacherModel);
+            search = null;
         }
 
+        Page<TeacherModel> teacherModelsPage = teacherRepository.findTeachersWithSearch(search,schoolId,pageable);
+
         return new PaginatedTeacherResponse(
-                response,
+                teacherModelsPage.getContent(),
                 page + 1,
                 perPage,
-                teacherPage.getTotalElements(),
-                teacherPage.getTotalPages()
+                teacherModelsPage.getTotalElements(),
+                teacherModelsPage.getTotalPages()
         );
     }
 
@@ -94,15 +85,9 @@ public class TeacherService {
     public TeacherDetailsResponse getTeacherDetails(Long teacherId){
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(()-> new EntityNotFoundException("Teacher with ID: " + teacherId + " does not exist!!!"));
         User user = teacher.getUser();
-        List<String> studyProgramSubjects = new ArrayList<>();
-        List<String> classes = new ArrayList<>();
-        for(TeacherSubject teacherSubject : teacher.getTeacherSubjects()){
-            StudyProgramSubject studyProgramSubject = teacherSubject.getStudyProgramSubject();
-            SchoolClass schoolClass = teacherSubject.getSchoolClass();
-            String subjectName = TeacherMapper.getFullStudyProgramSubjectName(studyProgramSubject);
-            studyProgramSubjects.add(subjectName);
-            classes.add(schoolClass.getName());
-        }
+        List<String> studyProgramSubjects = teacherSubjectRepository.getTeacherSubjectNamesForTeacher(teacherId);
+        List<String> classes = teacherSubjectRepository.getClassesNamesForTeacher(teacherId);
+
         return new TeacherDetailsResponse(
                 user.getFirstName(),
                 user.getLastName(),
@@ -114,7 +99,6 @@ public class TeacherService {
                 teacher.getQualification(),
                 studyProgramSubjects,
                 classes
-
         );
     }
 
@@ -127,6 +111,13 @@ public class TeacherService {
     @Transactional
     public void deleteTeacher(Long teacherId,User loggedUser){
         Teacher teacherToDelete = teacherRepository.findById(teacherId).orElseThrow(()-> new EntityNotFoundException("Teacher with ID: " + teacherId + " does not exist!!!"));
+        if (teacherToDelete.getDeleted()) {
+            throw new IllegalStateException("Teacher already deleted");
+        }
+        School school = userContextService.resolveSchool(loggedUser);
+        if(!school.getId().equals(teacherToDelete.getSchool().getId())){
+            throw new AccessDeniedException("You do not have permission to delete this teacher!");
+        }
         teacherToDelete.delete(loggedUser);
         teacherRepository.save(teacherToDelete);
         User user = teacherToDelete.getUser();

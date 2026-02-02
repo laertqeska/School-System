@@ -19,33 +19,24 @@ import java.util.List;
 
 @Service
 public class SchoolService {
-    @Autowired
-    private SchoolRepository schoolRepository;
+    private final SchoolRepository schoolRepository;
+    private final UserRepository userRepository;
+    private final RectorInvitationService rectorInvitationService;
 
-    @Autowired
-    private UserRepository userRepository;
+    public SchoolService(SchoolRepository schoolRepository, UserRepository userRepository, RectorInvitationService rectorInvitationService) {
+        this.schoolRepository = schoolRepository;
+        this.userRepository = userRepository;
+        this.rectorInvitationService = rectorInvitationService;
+    }
 
-    @Autowired
-    private RectorInvitationService rectorInvitationService;
 
     public PaginatedSchoolResponse listSchools(int page, int perPage){
         if(page > 0) page--;
         else throw new RuntimeException("Page parameter cannot be smaller or equal to 0!!!");
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<School> schoolPage = schoolRepository.findAll(pageable);
-        List<SchoolModel> response = new ArrayList<>();
-        for(School school : schoolPage.getContent()){
-            SchoolModel schoolModel = new SchoolModel(
-                    school.getId(),
-                    school.getName(),
-                    school.getCity(),
-                    school.getPhone(),
-                    school.getEmail()
-            );
-            response.add(schoolModel);
-        }
+        Page<SchoolModel> schoolPage = schoolRepository.findAllSchoolModels(pageable);
         return new PaginatedSchoolResponse(
-                response,
+                schoolPage.getContent(),
                 page,
                 perPage,
                 schoolPage.getTotalElements(),

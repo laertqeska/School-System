@@ -47,20 +47,11 @@ public class StudyProgramService {
 
     public PaginatedStudyProgramResponse getStudyProgramsForSchool(int page, int perPage, String studyProgramName, DegreeLevel degreeLevel, User user, Long departmentId){
         SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(user.getId()).orElseThrow(()->new EntityNotFoundException("School Admin not found with user id: " + user.getId()));
+        School school = schoolAdmin.getSchool();
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<StudyProgram> studyProgramPage =  studyProgramRepository.getStudyProgramsForSchool(pageable,departmentId,studyProgramName,degreeLevel.toString());
-        List<StudyProgramModel> studyPrograms = new ArrayList<>();
-        for(StudyProgram studyProgram : studyProgramPage.getContent()){
-            StudyProgramModel studyProgramModel = new StudyProgramModel(
-                    studyProgram.getId(),
-                    studyProgram.getName(),
-                    studyProgram.getDegreeLevel().toString(),
-                    studyProgram.getIsActive()
-            );
-            studyPrograms.add(studyProgramModel);
-        }
+        Page<StudyProgramModel> studyProgramPage =  studyProgramRepository.getStudyProgramModelsForSchool(pageable,school.getId(),departmentId,studyProgramName,degreeLevel);
         return new PaginatedStudyProgramResponse(
-                studyPrograms,
+                studyProgramPage.getContent(),
                 page,
                 perPage,
                 studyProgramPage.getTotalElements(),
@@ -76,26 +67,15 @@ public class StudyProgramService {
         }
 
         Pageable pageable = PageRequest.of(page, perPage);
-        Page<StudyProgram> studyProgramPage = studyProgramRepository.getPaginatedStudyProgramsForFaculty(
+        Page<StudyProgramModel> studyProgramPage = studyProgramRepository.getPaginatedStudyProgramsForFaculty(
                 pageable,
                 faculty.getId(),
                 studyProgramName,
-                degreeLevel != null ? degreeLevel.toString() : null
+                degreeLevel
         );
 
-        List<StudyProgramModel> studyPrograms = new ArrayList<>();
-        for (StudyProgram studyProgram : studyProgramPage.getContent()) {
-            StudyProgramModel studyProgramModel = new StudyProgramModel(
-                    studyProgram.getId(),
-                    studyProgram.getName(),
-                    studyProgram.getDegreeLevel().toString(),
-                    studyProgram.getIsActive()
-            );
-            studyPrograms.add(studyProgramModel);
-        }
-
         return new PaginatedStudyProgramResponse(
-                studyPrograms,
+                studyProgramPage.getContent(),
                 page,
                 perPage,
                 studyProgramPage.getTotalElements(),

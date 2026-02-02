@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/teaching-assignments")
 @PreAuthorize("hasRole('SCHOOL_ADMIN')")
 public class AdminTeachingController {
-    private TeacherAssignmentService teacherAssignmentService;
-    private AuthorizationService authorizationService;
+    private final TeacherAssignmentService teacherAssignmentService;
+    private final AuthorizationService authorizationService;
 
     public AdminTeachingController(TeacherAssignmentService teacherAssignmentService,AuthorizationService authorizationService) {
         this.teacherAssignmentService = teacherAssignmentService;

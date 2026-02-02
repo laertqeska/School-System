@@ -1,6 +1,8 @@
 package com.example.School_System.controllers.Student;
 
 import com.example.School_System.dto.student.StudentDetailsResponse;
+import com.example.School_System.entities.User;
+import com.example.School_System.services.AuthorizationService;
 import com.example.School_System.services.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,13 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/student/profile")
 @PreAuthorize("hasRole('STUDENT')")
 public class StudentProfileController {
-    @Autowired
-    private StudentService studentService;
+    private final StudentService studentService;
+    private final AuthorizationService authorizationService;
+
+    public StudentProfileController(StudentService studentService, AuthorizationService authorizationService) {
+        this.studentService = studentService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<StudentDetailsResponse> getStudentProfile(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        StudentDetailsResponse response = studentService.getStudentDetailsForStudent(authentication.getName());
+        User loggedUser = authorizationService.getCurrentUser();
+        StudentDetailsResponse response = studentService.getStudentDetailsForStudent(loggedUser);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

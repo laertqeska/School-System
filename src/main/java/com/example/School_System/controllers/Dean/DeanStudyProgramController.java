@@ -22,7 +22,7 @@ public class DeanStudyProgramController {
 
     private final StudyProgramService studyProgramService;
     private final StudyProgramSubjectService studyProgramSubjectService;
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
 
     public DeanStudyProgramController(StudyProgramService studyProgramService, StudyProgramSubjectService studyProgramSubjectService, AuthorizationService authorizationService) {
         this.studyProgramService = studyProgramService;

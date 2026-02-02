@@ -1,9 +1,12 @@
 package com.example.School_System.controllers.Teacher;
 
 import com.example.School_System.dto.schoolClass.TeacherClassesModel;
+import com.example.School_System.entities.User;
+import com.example.School_System.services.AuthorizationService;
 import com.example.School_System.services.SchoolClassService;
 import com.example.School_System.services.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,14 +22,20 @@ import java.util.List;
 @RequestMapping("/api/teacher/classes")
 @PreAuthorize("hasRole('TEACHER')")
 public class TeacherClassesController {
-    @Autowired
-    private TeacherService teacherService;
-    @Autowired
-    private SchoolClassService schoolClassService;
+    private final TeacherService teacherService;
+    private final SchoolClassService schoolClassService;
+    private final AuthorizationService authorizationService;
+
+    public TeacherClassesController(TeacherService teacherService, SchoolClassService schoolClassService, AuthorizationService authorizationService) {
+        this.teacherService = teacherService;
+        this.schoolClassService = schoolClassService;
+        this.authorizationService = authorizationService;
+    }
+
     @GetMapping
     public ResponseEntity<List<TeacherClassesModel>> getClasses(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<TeacherClassesModel> response = schoolClassService.getClassesForTeacher(authentication);
+        User loggedUser = authorizationService.getCurrentUser();
+        List<TeacherClassesModel> response = schoolClassService.getClassesForTeacher(loggedUser);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

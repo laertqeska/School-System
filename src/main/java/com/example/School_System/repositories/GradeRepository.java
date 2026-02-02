@@ -1,6 +1,7 @@
 package com.example.School_System.repositories;
 
 import com.example.School_System.dto.grade.StudentGradeModel;
+import com.example.School_System.dto.grade.TeachersGradeModel;
 import com.example.School_System.entities.Grade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,17 +15,21 @@ import java.math.BigDecimal;
 @Repository
 public interface GradeRepository extends JpaRepository<Grade,Long> {
 
-    @Query("SELECT g FROM Grade g " +
-            "WHERE g.studyProgramSubject.id = :studyProgramSubjectId " +
+    @Query("SELECT new com.example.School_System.dto.grade.TeachersGradeModel(student.user.firstName,student.user.lastName,class.name,g.score,g.maxScore) " +
+            "FROM Grade g " +
+            "JOIN g.student student " +
+            "JOIN student.schoolClass class " +
+            "WHERE g.teacher.id = :teacherId AND g.studyProgramSubject.id = :studyProgramSubjectId " +
             "AND (:classId IS NULL OR g.schoolClass.id = :classId) " +
             "AND (:score IS NULL OR g.score = :score) " +
             "AND (:search IS NULL OR " +
             "LOWER(CONCAT(g.student.user.firstName, ' ', g.student.user.lastName)) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<Grade> getGradesForTeacher(@Param("search") String search,
-                          @Param("studyProgramSubjectId") Long studyProgramSubjectId,
-                          @Param("classId") Long classId,
-                          @Param("score") BigDecimal score,
-                          Pageable pageable);
+    Page<TeachersGradeModel> getGradesForTeacher(@Param("teacherId") Long teacherId,
+                                                 @Param("search") String search,
+                                                 @Param("studyProgramSubjectId") Long studyProgramSubjectId,
+                                                 @Param("classId") Long classId,
+                                                 @Param("score") BigDecimal score,
+                                                 Pageable pageable);
 
     @Query("SELECT new com.example.School_System.dto.grade.StudentGradeModel(sps.subject.name,sps.credits,g.score,g.maxScore) FROM Grade g " +
             "JOIN g.studyProgramSubject sps " +

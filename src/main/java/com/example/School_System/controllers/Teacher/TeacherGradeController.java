@@ -17,10 +17,13 @@ import java.math.BigDecimal;
 @RequestMapping("/api/teacher/grades")
 @PreAuthorize("hasRole('TEACHER')")
 public class TeacherGradeController {
-    @Autowired
-    private GradeService gradeService;
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final GradeService gradeService;
+    private final AuthorizationService authorizationService;
+
+    public TeacherGradeController(GradeService gradeService, AuthorizationService authorizationService) {
+        this.gradeService = gradeService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<PaginatedTeachersGradeResponse> getGrades(
@@ -31,7 +34,8 @@ public class TeacherGradeController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int perPage
     ){
-        PaginatedTeachersGradeResponse response = gradeService.getGradesForTeacher(studyProgramSubjectId,classId,page,perPage,search,score);
+        User loggedUser = authorizationService.getCurrentUser();
+        PaginatedTeachersGradeResponse response = gradeService.getGradesForTeacher(loggedUser,studyProgramSubjectId,classId,page,perPage,search,score);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

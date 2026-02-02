@@ -1,10 +1,13 @@
 package com.example.School_System.repositories;
 
+import com.example.School_System.dto.studyProgramSubject.TeacherStudyProgramSubjectModel;
 import com.example.School_System.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface TeacherSubjectRepository extends JpaRepository<TeacherSubject,Long> {
@@ -16,6 +19,26 @@ public interface TeacherSubjectRepository extends JpaRepository<TeacherSubject,L
             SchoolClass schoolClass,
             AcademicYear academicYear
     );
+
+    @Query("SELECT CONCAT(studyProgram.name,' - ',subject.name,' (',studyProgram.degreeLevel,')')  " +
+            "FROM TeacherSubject ts " +
+            "JOIN ts.studyProgramSubject studyProgramSubject " +
+            "JOIN studyProgramSubject.studyProgram studyProgram " +
+            "JOIN studyProgramSubject.subject subject " +
+            "WHERE ts.teacher.id = :teacherId")
+    List<String> getTeacherSubjectNamesForTeacher(@Param("teacherId") Long teacherId);
+
+    @Query("SELECT ts.schoolClass.name " +
+            "FROM TeacherSubject ts " +
+            "WHERE ts.teacher.id = :teacherId")
+    List<String> getClassesNamesForTeacher(@Param("teacherId") Long teacherId);
+
+    @Query("SELECT new com.example.School_System.dto.studyProgramSubject.TeacherStudyProgramSubjectModel(studyProgramSubject.id,studyProgramSubject.subject.name) " +
+            "FROM TeacherSubject ts " +
+            "JOIN ts.studyProgramSubject studyProgramSubject " +
+            "JOIN ts.teacher teacher " +
+            "WHERE teacher.id = :teacherId")
+    List<TeacherStudyProgramSubjectModel> getTeacherStudyProgramSubjectModel(@Param("teacherId") Long teacherId);
 
 
 }

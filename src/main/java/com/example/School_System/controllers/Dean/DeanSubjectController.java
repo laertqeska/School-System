@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/dean/subjects")
 @PreAuthorize("hasRole('DEAN')")
 public class DeanSubjectController {
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
     private final SubjectService subjectService;
 
     public DeanSubjectController(SubjectService subjectService,AuthorizationService authorizationService) {

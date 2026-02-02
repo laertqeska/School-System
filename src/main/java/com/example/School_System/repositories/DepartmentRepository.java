@@ -17,4 +17,6 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
     List<DepartmentModelResponse> findDepartmentModelsByFacultyId(@Param("facultyId") Long facultyId);
 
     List<Department> findByFacultyId(Long facultyId);
+
+    boolean existsByFacultyIdAndName(Long facultyId,String name);
 }

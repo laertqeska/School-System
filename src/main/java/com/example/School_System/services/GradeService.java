@@ -42,36 +42,42 @@ public class GradeService {
         this.userRepository = userRepository;
     }
 
-    public PaginatedTeachersGradeResponse getGradesForTeacher(Long studyProgramSubjectId, Long classId,int page, int perPage, String search, BigDecimal score){
+    public PaginatedTeachersGradeResponse getGradesForTeacher(User loggedUser,Long studyProgramSubjectId, Long classId,int page, int perPage, String search, BigDecimal score){
         if(page > 0){
             page--;
         }
+        Long userId = loggedUser.getId();
+        Teacher teacher = teacherRepository.findByUserId(userId).orElseThrow(()->new EntityNotFoundException("Teacher not found for user id: " + userId));
+        StudyProgramSubject studyProgramSubject = studyProgramSubjectRepository.findById(studyProgramSubjectId)
+                .orElseThrow(()-> new EntityNotFoundException("Study Program Subject does not exist for the given id!"));
+        SchoolClass schoolClass = schoolClassRepository.findById(classId)
+                .orElseThrow(() -> new EntityNotFoundException("School class does not exist for the given id!"));
+        AcademicYear currentAcademicYear = academicYearRepository.findBySchoolIdAndIsCurrentTrue(teacher.getSchool().getId())
+                .orElseThrow(()-> new EntityNotFoundException("No academic year with this id and is current true"));
+
+        boolean isAssigned = teacherSubjectRepository.existsByTeacherAndStudyProgramSubjectAndSchoolClassAndAcademicYear(
+                teacher,
+                studyProgramSubject,
+                schoolClass,
+                currentAcademicYear
+        );
+        if(!isAssigned){
+            throw new AccessDeniedException(
+                    "You are not assigned to teach this subject for this class in the current academic year"
+            );
+        }
+
         Pageable pageable = PageRequest.of(page,perPage);
-        Page<Grade> gradesPage = gradeRepository.getGradesForTeacher(search,studyProgramSubjectId,classId,score,pageable);
-        List<TeachersGradeModel> response = getTeachersGradeModels(gradesPage);
+        Page<TeachersGradeModel> gradesPage = gradeRepository.getGradesForTeacher(teacher.getId(),search,studyProgramSubjectId,classId,score,pageable);
+
         return new PaginatedTeachersGradeResponse(
-                response,
+                gradesPage.getContent(),
                 page + 1,
                 perPage,
                 gradesPage.getTotalElements(),
                 gradesPage.getTotalPages()
         );
 
-    }
-
-    private static List<TeachersGradeModel> getTeachersGradeModels(Page<Grade> gradesPage) {
-        List<TeachersGradeModel> response = new ArrayList<>();
-        for(Grade grade : gradesPage.getContent()){
-            TeachersGradeModel teachersGradeModel = new TeachersGradeModel(
-              grade.getStudent().getUser().getFirstName(),
-              grade.getStudent().getUser().getLastName(),
-                    grade.getSchoolClass().getName(),
-                    grade.getScore(),
-                    grade.getMaxScore()
-            );
-            response.add(teachersGradeModel);
-        }
-        return response;
     }
 
     public Long createGrade(CreateGradeRequest request,User user){

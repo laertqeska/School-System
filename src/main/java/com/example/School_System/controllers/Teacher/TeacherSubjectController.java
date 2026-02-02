@@ -18,11 +18,13 @@ import java.util.List;
 @RequestMapping("/api/teacher/subjects")
 @PreAuthorize("hasRole('TEACHER')")
 public class TeacherSubjectController {
-    @Autowired
-    private StudyProgramSubjectService studyProgramSubjectService;
+    private final StudyProgramSubjectService studyProgramSubjectService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private AuthorizationService authorizationService;
+    public TeacherSubjectController(StudyProgramSubjectService studyProgramSubjectService, AuthorizationService authorizationService) {
+        this.studyProgramSubjectService = studyProgramSubjectService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<List<TeacherStudyProgramSubjectModel>> getStudyProgramSubjects(){

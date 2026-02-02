@@ -17,11 +17,14 @@ import java.util.List;
 @RequestMapping("/api/dean/departments")
 @PreAuthorize("hasRole('DEAN')")
 public class DeanDepartmentsController {
-    @Autowired
-    private DepartmentService departmentService;
+    private final DepartmentService departmentService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private AuthorizationService authorizationService;
+    public DeanDepartmentsController(DepartmentService departmentService, AuthorizationService authorizationService) {
+        this.departmentService = departmentService;
+        this.authorizationService = authorizationService;
+    }
+
     @PostMapping
     public ResponseEntity<Long> createDepartment(@RequestBody CreateDepartmentRequest request){
         User user = authorizationService.getCurrentUser();

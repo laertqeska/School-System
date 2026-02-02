@@ -1,6 +1,7 @@
 package com.example.School_System.repositories;
 
 import com.example.School_System.dto.teacher.TeacherModel;
+import com.example.School_System.entities.School;
 import com.example.School_System.entities.Teacher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,8 @@ import java.util.Optional;
 public interface TeacherRepository extends JpaRepository<Teacher,Long> {
     Page<Teacher> findBySchoolId(Pageable pageable,Long schoolId);
 
-    @Query("SELECT t FROM Teacher t " +
+    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(u.firstName,u.lastName,u.email,t.department.name,t.academicTitle) " +
+            "FROM Teacher t " +
             "JOIN t.user u " +
             "JOIN t.department d " +
             "WHERE t.school.id = :schoolId " +
@@ -24,11 +26,11 @@ public interface TeacherRepository extends JpaRepository<Teacher,Long> {
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<Teacher> findTeachersWithSearch(@Param("search") String search,
+    Page<TeacherModel> findTeachersWithSearch(@Param("search") String search,
                                          @Param("schoolId") Long schoolId,
                                          Pageable pageable);
 
-    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(u.firstName, u.lastName, u.email, d.name,  CAST(t.academicTitle AS string)) " +
+    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(u.firstName, u.lastName, u.email, d.name,  t.academicTitle) " +
             "FROM Teacher t " +
             "JOIN t.user u " +
             "JOIN t.department d " +
@@ -47,8 +49,10 @@ public interface TeacherRepository extends JpaRepository<Teacher,Long> {
 
     Optional<Teacher> findByUserId(Long userId);
 
-
-
-
-
+    @Query("SELECT s " +
+            "FROM Teacher t " +
+            "JOIN t.user user " +
+            "JOIN t.school s " +
+            "WHERE user.id = :userId")
+    Optional<School> findSchoolForTeacher(@Param("userId") Long userId);
 }

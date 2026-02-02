@@ -1,13 +1,15 @@
 package com.example.School_System.dto.teacher;
 
+import com.example.School_System.entities.valueObjects.AcademicTitle;
+
 public class TeacherModel {
     private String firstName;
     private String lastName;
     private String email;
     private String departmentName;
-    private String academicTitle;
+    private AcademicTitle academicTitle;
 
-    public TeacherModel(String firstName,String lastName,String email,String departmentName,String academicTitle) {
+    public TeacherModel(String firstName,String lastName,String email,String departmentName,AcademicTitle academicTitle) {
         this.academicTitle = academicTitle;
         this.departmentName = departmentName;
         this.email = email;
@@ -47,11 +49,11 @@ public class TeacherModel {
         this.departmentName = departmentName;
     }
 
-    public String getAcademicTitle() {
+    public AcademicTitle getAcademicTitle() {
         return academicTitle;
     }
 
-    public void setAcademicTitle(String academicTitle) {
+    public void setAcademicTitle(AcademicTitle academicTitle) {
         this.academicTitle = academicTitle;
     }
 }

@@ -128,7 +128,7 @@ public class StudentEnrollmentService {
             throw new IllegalArgumentException("Cannot enroll student in inactive school!");
         }
 
-        if(!studyProgram.getDepartment().getFaculty().getSchool().equals(school)){
+        if(!studyProgram.getDepartment().getFaculty().getSchool().getId().equals(school.getId())){
             throw new IllegalArgumentException("Cannot enroll student in non existing study program!");
         }
 
@@ -136,7 +136,7 @@ public class StudentEnrollmentService {
             throw new IllegalArgumentException("School class not found for school with ID: " + school.getId());
         }
 
-        if(!schoolClass.getStudyProgram().equals(studyProgram)){
+        if(!schoolClass.getStudyProgram().getId().equals(studyProgram.getId())){
             throw new IllegalArgumentException("School class does not belong to the selected study program!");
         }
     }

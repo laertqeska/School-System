@@ -1,6 +1,8 @@
 package com.example.School_System.repositories;
 
+import com.example.School_System.dto.studyProgram.StudyProgramModel;
 import com.example.School_System.entities.StudyProgram;
+import com.example.School_System.entities.valueObjects.DegreeLevel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,19 +24,29 @@ public interface StudyProgramRepository extends JpaRepository<StudyProgram,Long>
     Page<StudyProgram> getStudyProgramsForSchool(Pageable pageable, @Param("departmentId") Long departmentId, @Param("studyProgramName") String studyProgramName, @Param("degreeLevel") String degreeLevel);
 
 
-    @Query("SELECT sp FROM StudyProgram sp " +
+    @Query("SELECT new com.example.School_System.dto.studyProgram.StudyProgramModel(sp.id,sp.name,sp.degreeLevel,sp.isActive) " +
+            "FROM StudyProgram sp " +
             "JOIN sp.department d " +
             "WHERE d.faculty.id = :facultyId AND " +
             "(:studyProgramName IS NULL OR LOWER(sp.name) LIKE LOWER(CONCAT('%', :studyProgramName, '%'))) AND " +
-            "(:degreeLevel IS NULL OR LOWER(sp.degreeLevel) = LOWER(:degreeLevel))")
-    Page<StudyProgram> getPaginatedStudyProgramsForFaculty(
+            "(:degreeLevel IS NULL OR sp.degreeLevel = :degreeLevel)")
+    Page<StudyProgramModel> getPaginatedStudyProgramsForFaculty(
             Pageable pageable,
             @Param("facultyId") Long facultyId,
             @Param("studyProgramName") String studyProgramName,
-            @Param("degreeLevel") String degreeLevel
+            @Param("degreeLevel") DegreeLevel degreeLevel
     );
 
     List<StudyProgram> findByDepartmentId(Long departmentId);
 
     List<StudyProgram> findByDepartmentFacultyId(Long facultyId);
+
+    @Query("SELECT new com.example.School_System.dto.studyProgram.StudyProgramModel(sp.id,sp.name,sp.degreeLevel,sp.isActive) " +
+            "FROM StudyProgram sp " +
+            "JOIN sp.department d " +
+            "WHERE d.faculty.school.id = :schoolId " +
+            "AND (:departmentId IS NULL OR d.id = :departmentId) " +
+            "AND (:studyProgramName IS NULL OR LOWER(sp.name) LIKE LOWER(CONCAT('%',:studyProgramName,'%'))) " +
+            "AND (:degreeLevel IS NULL OR sp.degreeLevel = :degreeLevel)")
+    Page<StudyProgramModel> getStudyProgramModelsForSchool(Pageable pageable,@Param("schoolId") Long schoolId,@Param("departmentId") Long departmentId,@Param("studyProgramName") String studyProgramName,@Param("degreeLevel") DegreeLevel degreeLevel);
 }

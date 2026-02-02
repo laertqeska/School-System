@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/faculties")
 @PreAuthorize("hasRole('SCHOOL_ADMIN')")
 public class AdminFacultyController {
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
+    private final FacultyService facultyService;
 
-    @Autowired
-    private FacultyService facultyService;
+    public AdminFacultyController(AuthorizationService authorizationService, FacultyService facultyService) {
+        this.authorizationService = authorizationService;
+        this.facultyService = facultyService;
+    }
 
     @PostMapping
     public ResponseEntity<Long> createFaculty(@RequestBody CreateFacultyRequest request){

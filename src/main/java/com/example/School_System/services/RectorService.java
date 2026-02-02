@@ -22,14 +22,16 @@ public class RectorService {
     private final EmailService emailService;
     private final DeanInvitationRepository deanInvitationRepository;
     private final RectorRepository rectorRepository;
+    private final UserContextService userContextService;
 
-    public RectorService(FacultyRepository facultyRepository, SchoolRepository schoolRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, EmailService emailService, DeanInvitationRepository deanInvitationRepository, RectorRepository rectorRepository){
+    public RectorService(FacultyRepository facultyRepository, SchoolRepository schoolRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, EmailService emailService, DeanInvitationRepository deanInvitationRepository, RectorRepository rectorRepository, UserContextService userContextService){
         this.facultyRepository = facultyRepository;
         this.schoolRepository = schoolRepository;
         this.facultyApprovalTokenRepository = facultyApprovalTokenRepository;
         this.emailService = emailService;
         this.deanInvitationRepository = deanInvitationRepository;
         this.rectorRepository = rectorRepository;
+        this.userContextService = userContextService;
     }
 
     public PaginatedRectorFacultiesResponse getFacultiesForRector(User rector,int page, int perPage){
@@ -92,6 +94,10 @@ public class RectorService {
             throw new IllegalStateException("Invitation already sent to this email!");
         }
         Faculty faculty = facultyRepository.findById(facultyId).orElseThrow(() -> new EntityNotFoundException("Faculty not found for ID: " + facultyId));
+        School school = userContextService.resolveSchool(loggedUser);
+        if(!faculty.getSchool().getId().equals(school.getId())){
+            throw new AccessDeniedException("Faculty does not belong to your school!!!");
+        }
         DeanInvitation deanInvitation = new DeanInvitation(
                 deanEmail,
                 request.getDeanFullName(),

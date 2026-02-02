@@ -20,7 +20,7 @@ public class DeanInvitationService {
     private final UserRepository userRepository;
     private final FacultyRepository facultyRepository;
     private final PasswordEncoder encoder;
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
 
     public DeanInvitationService(DeanInvitationRepository deanInvitationRepository, UserRepository userRepository, FacultyRepository facultyRepository, PasswordEncoder encoder, AuthorizationService authorizationService) {
         this.deanInvitationRepository = deanInvitationRepository;

@@ -57,6 +57,9 @@ public class SchoolAdminService {
     @Transactional
     public void deleteAdmin(Long schoolAdminId,User loggedUser){
         SchoolAdmin schoolAdmin = schoolAdminRepository.findById(schoolAdminId).orElseThrow(()-> new EntityNotFoundException("School admin not found with ID: " + schoolAdminId));
+        if (schoolAdmin.getDeleted()) {
+            throw new IllegalStateException("Teacher already deleted");
+        }
         schoolAdmin.delete(loggedUser);
         schoolAdminRepository.save(schoolAdmin);
         User user = schoolAdmin.getUser();

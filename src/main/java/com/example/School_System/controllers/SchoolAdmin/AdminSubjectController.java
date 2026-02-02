@@ -17,15 +17,18 @@ import java.util.List;
 @RequestMapping("/api/admin/departments/{departmentId}/subjects")
 @PreAuthorize("hasRole('SCHOOL_ADMIN')")
 public class AdminSubjectController {
-    @Autowired
-    private SubjectService subjectService;
+    private final SubjectService subjectService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private AuthorizationService authorizationService;
+    public AdminSubjectController(SubjectService subjectService, AuthorizationService authorizationService) {
+        this.subjectService = subjectService;
+        this.authorizationService = authorizationService;
+    }
 
     @GetMapping
     public ResponseEntity<List<SchoolAdminSubjectModel>> getSubjectsForDepartment(@PathVariable Long departmentId){
-        List<SchoolAdminSubjectModel> response = subjectService.getSubjectsForDepartment(departmentId);
+        User loggedUser = authorizationService.getCurrentUser();
+        List<SchoolAdminSubjectModel> response = subjectService.getSubjectsForDepartment(loggedUser,departmentId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

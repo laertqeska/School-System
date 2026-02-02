@@ -57,23 +57,6 @@ public class CreateStudentRequest {
 
     public CreateStudentRequest() {}
 
-    public CreateStudentRequest(String username, String email, String password,
-                                String firstName, String lastName, String phone,
-                                Long studyProgramId, String personalNumber,
-                                Date dateOfBirth, Gender gender, String address,Long schoolClassId) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.studyProgramId = studyProgramId;
-        this.personalNumber = personalNumber;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.address = address;
-        this.schoolClassId = schoolClassId;
-    }
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

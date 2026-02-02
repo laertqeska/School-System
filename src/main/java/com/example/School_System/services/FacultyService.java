@@ -66,6 +66,9 @@ public class FacultyService {
     public void deleteFaculty(User loggedUser, Long facultyId){
         Faculty faculty = facultyRepository.findById(facultyId)
                 .orElseThrow(() -> new EntityNotFoundException("Faculty not found with id: " + facultyId));
+        if(faculty.getDeleted()){
+            throw new IllegalStateException("Faculty is already deleted!");
+        }
         School adminSchool = userContextService.resolveSchool(loggedUser);
         if(!faculty.getSchool().getId().equals(adminSchool.getId())){
             throw new AccessDeniedException("You do not have permission to delete this faculty!");

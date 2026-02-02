@@ -34,6 +34,11 @@ public class DepartmentService {
     public Long createDepartment(User dean, CreateDepartmentRequest request){
         Faculty faculty = dean.getFacultyOfDean();
 
+        boolean departmentAlreadyExists = departmentRepository.existsByFacultyIdAndName(faculty.getId(), request.getName());
+        if(departmentAlreadyExists){
+            throw new IllegalStateException("Department with this name already exists in this faculty!");
+        }
+
         Department department = new Department(
                 faculty,request.getName()
         );
@@ -54,6 +59,10 @@ public class DepartmentService {
     public void deleteDepartment(User loggedUser,Long departmentId){
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
+
+        if(department.getDeleted()){
+            throw new IllegalStateException("Faculty is already deleted!");
+        }
         if(department.getFaculty().getDeleted()){
             throw new IllegalStateException("Cannot delete department because faculty is deleted!");
         }

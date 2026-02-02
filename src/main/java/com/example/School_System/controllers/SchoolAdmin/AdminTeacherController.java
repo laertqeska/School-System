@@ -21,27 +21,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/teachers")
 @PreAuthorize("hasRole('SCHOOL_ADMIN')")
 public class AdminTeacherController {
-    @Autowired
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
+    private final TeacherEnrollmentService teacherCreationService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    private TeacherEnrollmentService teacherCreationService;
-
-    @Autowired
-    private AuthorizationService authorizationService;
+    public AdminTeacherController(TeacherService teacherService, TeacherEnrollmentService teacherCreationService, AuthorizationService authorizationService) {
+        this.teacherService = teacherService;
+        this.teacherCreationService = teacherCreationService;
+        this.authorizationService = authorizationService;
+    }
 
 
     @PostMapping("/create")
     public ResponseEntity<Long> createTeacher(@RequestBody CreateTeacherRequest request){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long id = teacherCreationService.createTeacher(request,authentication);
+        User loggedUser = authorizationService.getCurrentUser();
+        Long id = teacherCreationService.createTeacher(request,loggedUser);
         return new ResponseEntity<>(id,HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<PaginatedTeacherResponse> getTeachers(@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "10") int perPage,@RequestParam(required = false) String search){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        PaginatedTeacherResponse response =  teacherService.listTeachers(authentication,page,perPage,search);
+        User loggedUser = authorizationService.getCurrentUser();
+        PaginatedTeacherResponse response =  teacherService.listTeachers(loggedUser,page,perPage,search);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

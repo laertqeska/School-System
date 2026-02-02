@@ -7,6 +7,7 @@ import com.example.School_System.entities.valueObjects.RoleName;
 import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,14 +51,19 @@ public class TeacherEnrollmentService {
         this.schoolAdminRepository = schoolAdminRepository;
     }
 
-    public Long createTeacher(CreateTeacherRequest request, Authentication auth){
-        User loggedUser = (User) auth.getPrincipal();
-        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(loggedUser.getId()).orElseThrow(()->new EntityNotFoundException("School Admin not found for user id: " + loggedUser.getId()));
+    public Long createTeacher(CreateTeacherRequest request, User loggedUser){
+        Long userId = loggedUser.getId();
+        SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(userId)
+                .orElseThrow(()->new EntityNotFoundException("School Admin not found for user id: " + userId));
         Long schoolId = schoolAdmin.getSchool().getId();
-        School school = schoolRepository.findById(schoolId).orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + schoolId));
-        Department department = departmentRepository.findById(request.getDepartmentId()).orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + request.getDepartmentId()));
+        School school = schoolRepository.findById(schoolId)
+                .orElseThrow(() -> new EntityNotFoundException("School not found with ID: " + schoolId));
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + request.getDepartmentId()));
 
-
+        if(!department.getFaculty().getSchool().getId().equals(school.getId())){
+            throw new AccessDeniedException("Department does not belong to your school!!!");
+        }
         User user = createUser(request);
         User savedUser = userRepository.save(user);
         assignTeacherRole(savedUser);

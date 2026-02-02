@@ -16,9 +16,10 @@ public interface RectorRepository extends JpaRepository<User,Long> {
     @Query("SELECT new com.example.School_System.dto.rector.RectorModel(r.firstName,r.lastName,r.email,s.name) " +
             "FROM User r " +
             "JOIN School s ON s.rector = r " +
-            "WHERE LOWER(r.firstName) LIKE CONCAT('%',:search,'%') OR " +
+            "WHERE (:search IS NULL OR " +
+            "LOWER(r.firstName) LIKE CONCAT('%',:search,'%') OR " +
             "LOWER(r.lastName) LIKE CONCAT('%',:search,'%') OR " +
             "LOWER(r.email) LIKE CONCAT('%',:search,'%') OR " +
-            "LOWER(s.name) LIKE CONCAT('%',:search,'%')")
+            "LOWER(s.name) LIKE CONCAT('%',:search,'%'))")
     Page<RectorModel> findRectorsWithSearch(Pageable pageable, @Param("search") String search);
 }

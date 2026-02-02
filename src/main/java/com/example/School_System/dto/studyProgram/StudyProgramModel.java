@@ -1,12 +1,14 @@
 package com.example.School_System.dto.studyProgram;
 
+import com.example.School_System.entities.valueObjects.DegreeLevel;
+
 public class StudyProgramModel {
     private Long id;
     private String name;
-    private String degreeLevel;
-    private boolean isActive;
+    private DegreeLevel degreeLevel;
+    private Boolean isActive;
 
-    public StudyProgramModel(Long id, String name, String degreeLevel, boolean isActive) {
+    public StudyProgramModel(Long id, String name, DegreeLevel degreeLevel, Boolean isActive) {
         this.id = id;
         this.name = name;
         this.degreeLevel = degreeLevel;
@@ -29,11 +31,11 @@ public class StudyProgramModel {
         this.name = name;
     }
 
-    public String getDegreeLevel() {
+    public DegreeLevel getDegreeLevel() {
         return degreeLevel;
     }
 
-    public void setDegreeLevel(String degreeLevel) {
+    public void setDegreeLevel(DegreeLevel degreeLevel) {
         this.degreeLevel = degreeLevel;
     }
 
