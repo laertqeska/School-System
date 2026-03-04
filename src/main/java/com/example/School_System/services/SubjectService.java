@@ -16,14 +16,14 @@ import java.util.List;
 @Service
 public class SubjectService {
     private final SubjectRepository subjectRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
     private final SchoolAdminRepository schoolAdminRepository;
     private final SchoolRepository schoolRepository;
     private final DepartmentRepository departmentRepository;
 
-    public SubjectService(SubjectRepository subjectRepository, UserContextService userContextService, SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository, DepartmentRepository departmentRepository){
+    public SubjectService(SubjectRepository subjectRepository, SchoolContextService schoolContextService, SchoolAdminRepository schoolAdminRepository, SchoolRepository schoolRepository, DepartmentRepository departmentRepository){
         this.subjectRepository = subjectRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
         this.schoolAdminRepository = schoolAdminRepository;
         this.schoolRepository = schoolRepository;
         this.departmentRepository = departmentRepository;
@@ -34,7 +34,7 @@ public class SubjectService {
         if(!dean.isDean()){
             throw new AccessDeniedException("Only deans can create subjects!");
         }
-        School school = userContextService.resolveSchool(dean);
+        School school = schoolContextService.resolveSchool(dean);
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new EntityNotFoundException("Department not found with ID: " + departmentId));
         if(!department.getFaculty().getSchool().getId().equals(school.getId())){
@@ -56,7 +56,7 @@ public class SubjectService {
 
 
     public List<SchoolAdminSubjectModel> getSubjectsForDepartment(User user,Long departmentId){
-        School school = userContextService.resolveSchool(user);
+        School school = schoolContextService.resolveSchool(user);
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(()-> new EntityNotFoundException("Department does not exist with ID: " + departmentId));
         if(!department.getFaculty().getSchool().getId().equals(school.getId())){

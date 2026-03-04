@@ -17,7 +17,9 @@ import java.util.Optional;
 public interface SchoolAdminRepository extends JpaRepository<SchoolAdmin,Long> {
     Optional<SchoolAdmin> findByUserId(Long userId);
 
-    @Query("SELECT new com.example.School_System.dto.schoolAdmin.SchoolAdminModel(user.firstName,user.lastName,user.email,school.name) " +
+    Optional<SchoolAdmin> findByUserIdAndIsDeletedFalse(Long userId);
+
+    @Query("SELECT new com.example.School_System.dto.schoolAdmin.SchoolAdminModel(admin.id,user.firstName,user.lastName,user.email,school.name) " +
             "FROM SchoolAdmin admin " +
             "JOIN admin.user user " +
             "JOIN admin.school school " +
@@ -25,7 +27,8 @@ public interface SchoolAdminRepository extends JpaRepository<SchoolAdmin,Long> {
             "LOWER(user.firstName) LIKE CONCAT('%',:search,'%') OR "+
             "LOWER(user.lastName) LIKE CONCAT('%',:search,'%') OR " +
             "LOWER(user.email) LIKE CONCAT('%',:search,'%') OR " +
-            "LOWER(school.name) LIKE CONCAT('%',:search,'%'))")
+            "LOWER(school.name) LIKE CONCAT('%',:search,'%')) " +
+            "AND admin.isDeleted = false")
     Page<SchoolAdminModel> findSchoolAdminsWithSearch(Pageable pageable, @Param("search") String search);
 
 
@@ -33,6 +36,7 @@ public interface SchoolAdminRepository extends JpaRepository<SchoolAdmin,Long> {
             "FROM SchoolAdmin admin " +
             "JOIN admin.user user " +
             "JOIN admin.school s " +
-            "WHERE user.id = :userId")
+            "WHERE user.id = :userId " +
+            "AND s.isDeleted = false")
     Optional<School> findSchoolForSchoolAdmin(@Param("userId") Long userId);
 }

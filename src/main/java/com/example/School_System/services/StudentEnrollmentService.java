@@ -20,7 +20,7 @@ public class StudentEnrollmentService {
     private final SchoolRepository schoolRepository;
     private final SchoolClassRepository schoolClassRepository;
     private final StudyProgramRepository studyProgramRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -28,7 +28,7 @@ public class StudentEnrollmentService {
     @Autowired
     public StudentEnrollmentService(StudentRepository studentRepository,
                                     SchoolRepository schoolRepository, SchoolClassRepository schoolClassRepository,
-                                    StudyProgramRepository studyProgramRepository, UserContextService userContextService,
+                                    StudyProgramRepository studyProgramRepository, SchoolContextService schoolContextService,
                                     UserRepository userRepository,
                                     RoleRepository roleRepository,
                                     PasswordEncoder passwordEncoder) {
@@ -36,14 +36,14 @@ public class StudentEnrollmentService {
         this.schoolRepository = schoolRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.studyProgramRepository = studyProgramRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public Long createStudent(CreateStudentRequest request,User loggedUser) {
-        School school = userContextService.resolveSchool(loggedUser);
+        School school = schoolContextService.resolveSchool(loggedUser);
 
         StudyProgram studyProgram = studyProgramRepository.findById(request.getStudyProgramId())
                 .orElseThrow(() -> new EntityNotFoundException("Study program not found with ID: " + request.getStudyProgramId()));

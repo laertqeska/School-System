@@ -20,6 +20,7 @@ public interface RectorRepository extends JpaRepository<User,Long> {
             "LOWER(r.firstName) LIKE CONCAT('%',:search,'%') OR " +
             "LOWER(r.lastName) LIKE CONCAT('%',:search,'%') OR " +
             "LOWER(r.email) LIKE CONCAT('%',:search,'%') OR " +
-            "LOWER(s.name) LIKE CONCAT('%',:search,'%'))")
+            "LOWER(s.name) LIKE CONCAT('%',:search,'%')) " +
+            "AND r.isDeleted = false")
     Page<RectorModel> findRectorsWithSearch(Pageable pageable, @Param("search") String search);
 }

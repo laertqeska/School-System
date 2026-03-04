@@ -25,7 +25,7 @@ public class AdminStudyProgramController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginatedStudyProgramResponse> getStudyPrograms(@PathVariable Long departmentId, @RequestParam int page, @RequestParam int perPage, @RequestParam(required = false) String studyProgramName, @RequestParam(required = false) DegreeLevel degreeLevel){
+    public ResponseEntity<PaginatedStudyProgramResponse> getStudyPrograms(@PathVariable Long departmentId, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int perPage, @RequestParam(required = false) String studyProgramName, @RequestParam(required = false) DegreeLevel degreeLevel){
         User loggedUser = authorizationService.getCurrentUser();
         PaginatedStudyProgramResponse response =  studyProgramService.getStudyProgramsForSchool(page,perPage,studyProgramName,degreeLevel,loggedUser,departmentId);
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -1,12 +1,14 @@
 package com.example.School_System.controllers.SchoolAdmin;
 
 
+import com.example.School_System.dto.schedule.ScheduleForTeacherResponse;
 import com.example.School_System.dto.teacher.CreateTeacherRequest;
 import com.example.School_System.dto.teacher.PaginatedTeacherResponse;
 import com.example.School_System.dto.teacher.TeacherDetailsResponse;
 import com.example.School_System.dto.teacher.UpdateTeacherRequest;
 import com.example.School_System.entities.User;
 import com.example.School_System.services.AuthorizationService;
+import com.example.School_System.services.ScheduleService;
 import com.example.School_System.services.TeacherEnrollmentService;
 import com.example.School_System.services.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,13 @@ public class AdminTeacherController {
     private final TeacherService teacherService;
     private final TeacherEnrollmentService teacherCreationService;
     private final AuthorizationService authorizationService;
+    private final ScheduleService scheduleService;
 
-    public AdminTeacherController(TeacherService teacherService, TeacherEnrollmentService teacherCreationService, AuthorizationService authorizationService) {
+    public AdminTeacherController(TeacherService teacherService, TeacherEnrollmentService teacherCreationService, AuthorizationService authorizationService, ScheduleService scheduleService) {
         this.teacherService = teacherService;
         this.teacherCreationService = teacherCreationService;
         this.authorizationService = authorizationService;
+        this.scheduleService = scheduleService;
     }
 
 
@@ -69,5 +73,12 @@ public class AdminTeacherController {
         User loggedUser = authorizationService.getCurrentUser();
         teacherService.deleteTeacher(teacherId,loggedUser);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{teacherId}/schedule")
+    public ResponseEntity<ScheduleForTeacherResponse> getTeacherSchedule(@PathVariable Long teacherId){
+        User loggedUser = authorizationService.getCurrentUser();
+        ScheduleForTeacherResponse response = scheduleService.getTeacherScheduleForAdmin(loggedUser,teacherId);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

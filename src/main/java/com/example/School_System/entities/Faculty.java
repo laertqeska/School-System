@@ -2,9 +2,9 @@ package com.example.School_System.entities;
 
 import com.example.School_System.entities.valueObjects.ApprovalStatus;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -12,7 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "faculties")
-@Filter(name = "deletedFilter",condition = "is_deleted = isDeleted")
+@FilterDef(name = "deletedFilter",parameters = @ParamDef(name = "isDeleted",type=Boolean.class))
+@Filter(name = "deletedFilter",condition = "is_deleted = :isDeleted")
 public class Faculty extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

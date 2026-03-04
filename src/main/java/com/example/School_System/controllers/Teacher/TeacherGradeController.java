@@ -28,7 +28,7 @@ public class TeacherGradeController {
     @GetMapping
     public ResponseEntity<PaginatedTeachersGradeResponse> getGrades(
             @RequestParam Long studyProgramSubjectId,
-            @RequestParam(required = false) Long classId,
+            @RequestParam Long classId,
             @RequestParam(required = false) BigDecimal score,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "1") int page,

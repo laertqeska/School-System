@@ -2,9 +2,8 @@ package com.example.School_System.entities;
 
 import com.example.School_System.entities.valueObjects.ClassroomType;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -12,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "classrooms")
-@Filter(name = "deletedFilter",condition = "is_deleted = isDeleted")
+@Filter(name = "deletedFilter",condition = "is_deleted = :isDeleted")
 public class Classroom extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +56,19 @@ public class Classroom extends SoftDeletableEntity{
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Classroom(){}
+
+    public Classroom(Building building, String classroomNumber, String classroomName, ClassroomType classroomType, Integer capacity, Boolean hasProjector, Boolean hasAudioSystem, Boolean isAccessible) {
+        this.building = building;
+        this.classroomNumber = classroomNumber;
+        this.classroomName = classroomName;
+        this.classroomType = classroomType;
+        this.capacity = capacity;
+        this.hasProjector = hasProjector;
+        this.hasAudioSystem = hasAudioSystem;
+        this.isAccessible = isAccessible;
+    }
 
     public Long getId() {
         return id;

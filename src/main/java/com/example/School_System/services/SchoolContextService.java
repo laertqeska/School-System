@@ -6,14 +6,14 @@ import com.example.School_System.entities.User;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserContextService {
+public class SchoolContextService {
     private final TeacherRepository teacherRepository;
     private final StudentRepository studentRepository;
     private final SchoolAdminRepository schoolAdminRepository;
     private final FacultyRepository facultyRepository;
     private final SchoolRepository schoolRepository;
 
-    public UserContextService(TeacherRepository teacherRepository, StudentRepository studentRepository, SchoolAdminRepository schoolAdminRepository, FacultyRepository facultyRepository, SchoolRepository schoolRepository) {
+    public SchoolContextService(TeacherRepository teacherRepository, StudentRepository studentRepository, SchoolAdminRepository schoolAdminRepository, FacultyRepository facultyRepository, SchoolRepository schoolRepository) {
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.schoolAdminRepository = schoolAdminRepository;

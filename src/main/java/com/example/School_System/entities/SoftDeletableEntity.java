@@ -7,7 +7,6 @@ import org.hibernate.annotations.ParamDef;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@FilterDef(name = "deletedFilter",parameters = @ParamDef(name = "isDeleted",type=Boolean.class))
 public abstract class SoftDeletableEntity {
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;

@@ -14,7 +14,6 @@ import com.example.School_System.repositories.StudentRepository;
 import com.example.School_System.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -24,21 +23,19 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
     private final SchoolAdminRepository schoolAdminRepository;
 
-    public StudentService(StudentRepository studentRepository, UserRepository userRepository, UserContextService userContextService, SchoolAdminRepository schoolAdminRepository) {
+    public StudentService(StudentRepository studentRepository, UserRepository userRepository, SchoolContextService schoolContextService, SchoolAdminRepository schoolAdminRepository) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
         this.schoolAdminRepository = schoolAdminRepository;
     }
 
@@ -48,7 +45,7 @@ public class StudentService {
         }
         Pageable pageable = PageRequest.of(page,perPage);
 
-        School school = userContextService.resolveSchool(schoolAdmin);
+        School school = schoolContextService.resolveSchool(schoolAdmin);
         Long schoolId = school.getId();
 
         Page<StudentModel> studentPage = studentRepository.findStudentModelsBySchoolId(schoolId,pageable);
@@ -102,7 +99,7 @@ public class StudentService {
         if (student.getDeleted()) {
             throw new IllegalStateException("Student already deleted!");
         }
-        School school = userContextService.resolveSchool(loggedUser);
+        School school = schoolContextService.resolveSchool(loggedUser);
         if(!school.getId().equals(student.getSchool().getId())){
             throw new AccessDeniedException("You do not have permission to delete this student!");
         }

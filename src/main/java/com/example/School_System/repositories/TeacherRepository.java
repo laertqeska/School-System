@@ -16,21 +16,22 @@ import java.util.Optional;
 public interface TeacherRepository extends JpaRepository<Teacher,Long> {
     Page<Teacher> findBySchoolId(Pageable pageable,Long schoolId);
 
-    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(u.firstName,u.lastName,u.email,t.department.name,t.academicTitle) " +
+    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(t.id,u.firstName,u.lastName,u.email,t.department.name,t.academicTitle) " +
             "FROM Teacher t " +
             "JOIN t.user u " +
             "JOIN t.department d " +
             "WHERE t.school.id = :schoolId " +
-            "AND (:search IS NULL OR " +
-            "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%')))")
+            "AND (" +
+            "LOWER(u.firstName) LIKE CONCAT('%', :search, '%') OR " +
+            "LOWER(u.lastName) LIKE CONCAT('%', :search, '%') OR " +
+            "LOWER(u.email) LIKE CONCAT('%', :search, '%') OR " +
+            "LOWER(d.name) LIKE CONCAT('%', :search, '%')) " +
+            "AND t.isDeleted = false")
     Page<TeacherModel> findTeachersWithSearch(@Param("search") String search,
                                          @Param("schoolId") Long schoolId,
                                          Pageable pageable);
 
-    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(u.firstName, u.lastName, u.email, d.name,  t.academicTitle) " +
+    @Query("SELECT new com.example.School_System.dto.teacher.TeacherModel(t.id,u.firstName, u.lastName, u.email, d.name,  t.academicTitle) " +
             "FROM Teacher t " +
             "JOIN t.user u " +
             "JOIN t.department d " +
@@ -40,7 +41,8 @@ public interface TeacherRepository extends JpaRepository<Teacher,Long> {
             "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%')))")
+            "LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND t.isDeleted = false")
     Page<TeacherModel> findTeachersWithSearchByFaculty(
             @Param("search") String search,
             @Param("schoolId") Long schoolId,
@@ -48,6 +50,10 @@ public interface TeacherRepository extends JpaRepository<Teacher,Long> {
             Pageable pageable);
 
     Optional<Teacher> findByUserId(Long userId);
+
+    Optional<Teacher> findByUserIdAndIsDeletedFalse(Long userId);
+
+    Optional<Teacher> findByIdAndIsDeletedFalse(Long teacherId);
 
     @Query("SELECT s " +
             "FROM Teacher t " +

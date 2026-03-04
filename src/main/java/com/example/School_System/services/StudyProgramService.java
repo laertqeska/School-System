@@ -49,6 +49,12 @@ public class StudyProgramService {
         SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(user.getId()).orElseThrow(()->new EntityNotFoundException("School Admin not found with user id: " + user.getId()));
         School school = schoolAdmin.getSchool();
         Pageable pageable = PageRequest.of(page,perPage);
+        if(studyProgramName == null || studyProgramName.isBlank()){
+            studyProgramName = "";
+        }
+        else{
+            studyProgramName = studyProgramName.toLowerCase();
+        }
         Page<StudyProgramModel> studyProgramPage =  studyProgramRepository.getStudyProgramModelsForSchool(pageable,school.getId(),departmentId,studyProgramName,degreeLevel);
         return new PaginatedStudyProgramResponse(
                 studyProgramPage.getContent(),

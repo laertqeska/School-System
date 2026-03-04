@@ -49,6 +49,17 @@ public class AttendanceRecord{
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public AttendanceRecord(Student student, ClassSession classSession, AttendanceStatus status, User createdBy) {
+        this.student = student;
+        this.classSession = classSession;
+        this.status = status;
+        this.createdBy = createdBy;
+    }
+
+    public AttendanceRecord() {
+
+    }
+
     public Long getId() {
         return id;
     }

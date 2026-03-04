@@ -24,9 +24,9 @@ public class FacultyService {
     private final DepartmentRepository departmentRepository;
     private final FacultyApprovalTokenRepository facultyApprovalTokenRepository;
     private final FacultyApprovalService facultyApprovalService;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
 
-    public FacultyService(FacultyRepository facultyRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramRepository studyProgramRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, DepartmentRepository departmentRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, FacultyApprovalService facultyApprovalService, UserContextService userContextService){
+    public FacultyService(FacultyRepository facultyRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramRepository studyProgramRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, DepartmentRepository departmentRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, FacultyApprovalService facultyApprovalService, SchoolContextService schoolContextService){
         this.facultyRepository = facultyRepository;
         this.schoolAdminRepository = schoolAdminRepository;
         this.studyProgramRepository = studyProgramRepository;
@@ -34,7 +34,7 @@ public class FacultyService {
         this.departmentRepository = departmentRepository;
         this.facultyApprovalTokenRepository = facultyApprovalTokenRepository;
         this.facultyApprovalService = facultyApprovalService;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
     }
 
     @Transactional
@@ -42,6 +42,10 @@ public class FacultyService {
         Long userId = user.getId();
         SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(userId).orElseThrow(()-> new EntityNotFoundException("School admin not found with user ID: " + userId));
         School school = schoolAdmin.getSchool();
+        User rector = school.getRector();
+        if(rector == null){
+            throw new IllegalStateException("There is no rector for this school to approve the faculty creation");
+        }
         Faculty faculty = new Faculty(
                 school,
                 request.getFacultyName(),
@@ -58,6 +62,12 @@ public class FacultyService {
         SchoolAdmin schoolAdmin = schoolAdminRepository.findByUserId(userId).orElseThrow(()->new EntityNotFoundException("School admin not found with user ID: " + userId));
         School school = schoolAdmin.getSchool();
         Pageable pageable = PageRequest.of(page,perPage);
+        if(search == null || search.isBlank()){
+            search = "";
+        }
+        else{
+            search = search.toLowerCase();
+        }
         Page<FacultyModel> faculties = facultyRepository.getFaculties(pageable,search,school.getId());
         return new PaginatedFacultyResponse(faculties.getContent(),page,perPage,faculties.getTotalElements(),faculties.getTotalPages());
     }
@@ -69,7 +79,7 @@ public class FacultyService {
         if(faculty.getDeleted()){
             throw new IllegalStateException("Faculty is already deleted!");
         }
-        School adminSchool = userContextService.resolveSchool(loggedUser);
+        School adminSchool = schoolContextService.resolveSchool(loggedUser);
         if(!faculty.getSchool().getId().equals(adminSchool.getId())){
             throw new AccessDeniedException("You do not have permission to delete this faculty!");
         }

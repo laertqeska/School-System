@@ -67,6 +67,12 @@ public class GradeService {
             );
         }
 
+        if(search == null || search.isBlank()){
+            search = "";
+        }
+        else{
+            search = search.toLowerCase();
+        }
         Pageable pageable = PageRequest.of(page,perPage);
         Page<TeachersGradeModel> gradesPage = gradeRepository.getGradesForTeacher(teacher.getId(),search,studyProgramSubjectId,classId,score,pageable);
 

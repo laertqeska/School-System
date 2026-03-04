@@ -1,17 +1,23 @@
 package com.example.School_System.dto.schoolAdmin;
 
 public class SchoolAdminModel {
+    private Long id;
     private String firstName;
     private String secondName;
     private String email;
     private String schoolName;
 
-    public SchoolAdminModel(String firstName, String secondName, String email, String schoolName) {
+    public SchoolAdminModel(Long id,String firstName, String secondName, String email, String schoolName) {
+        this.id = id;
         this.firstName = firstName;
         this.secondName = secondName;
         this.email = email;
         this.schoolName = schoolName;
     }
+
+    public Long getId(){ return id; }
+
+    public void setId(Long id) { this.id = id; }
 
     public String getFirstName() {
         return firstName;

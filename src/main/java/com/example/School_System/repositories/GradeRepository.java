@@ -20,10 +20,10 @@ public interface GradeRepository extends JpaRepository<Grade,Long> {
             "JOIN g.student student " +
             "JOIN student.schoolClass class " +
             "WHERE g.teacher.id = :teacherId AND g.studyProgramSubject.id = :studyProgramSubjectId " +
-            "AND (:classId IS NULL OR g.schoolClass.id = :classId) " +
+            "AND (g.schoolClass.id = :classId) " +
             "AND (:score IS NULL OR g.score = :score) " +
             "AND (:search IS NULL OR " +
-            "LOWER(CONCAT(g.student.user.firstName, ' ', g.student.user.lastName)) LIKE LOWER(CONCAT('%', :search, '%')))")
+            "LOWER(CONCAT(g.student.user.firstName, ' ', g.student.user.lastName)) LIKE CONCAT('%', :search, '%'))")
     Page<TeachersGradeModel> getGradesForTeacher(@Param("teacherId") Long teacherId,
                                                  @Param("search") String search,
                                                  @Param("studyProgramSubjectId") Long studyProgramSubjectId,

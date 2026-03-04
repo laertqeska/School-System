@@ -35,7 +35,6 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Public endpoints - MUST come FIRST and be SPECIFIC
                         .requestMatchers(
                                 "/api/invitations/**",
                                 "/api/auth/**",
@@ -48,19 +47,20 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/error"  // ✅ Add this to prevent error page 403
+                                "/error"
                         ).permitAll()
 
-                        // ✅ Role-based protected endpoints
+                        // Role-based protected endpoints
                         .requestMatchers("/api/super-admin/**").hasRole("SUPER_ADMIN")
                         .requestMatchers("/api/schools/**").hasRole("SUPER_ADMIN")
                         .requestMatchers("/api/dean/**").hasRole("DEAN")
+                        .requestMatchers("/api/department-head/**").hasRole("DEPARTMENT_HEAD")
                         .requestMatchers("/api/admin/**").hasRole("SCHOOL_ADMIN")
                         .requestMatchers("/api/rector/**").hasRole("RECTOR")
                         .requestMatchers("/api/teacher/**").hasAnyRole("SCHOOL_ADMIN", "TEACHER")
                         .requestMatchers("/api/student/**").hasAnyRole("SCHOOL_ADMIN", "TEACHER", "STUDENT")
 
-                        // ✅ All others require authentication
+                        // All others require authentication
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -68,7 +68,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                // ✅ Configure exception handling
+
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

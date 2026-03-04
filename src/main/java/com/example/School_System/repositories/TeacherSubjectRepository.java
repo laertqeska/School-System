@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TeacherSubjectRepository extends JpaRepository<TeacherSubject,Long> {
@@ -19,6 +20,8 @@ public interface TeacherSubjectRepository extends JpaRepository<TeacherSubject,L
             SchoolClass schoolClass,
             AcademicYear academicYear
     );
+
+    boolean existsByTeacherAndSchoolClass(Teacher teacher,SchoolClass schoolClass);
 
     @Query("SELECT CONCAT(studyProgram.name,' - ',subject.name,' (',studyProgram.degreeLevel,')')  " +
             "FROM TeacherSubject ts " +
@@ -40,5 +43,5 @@ public interface TeacherSubjectRepository extends JpaRepository<TeacherSubject,L
             "WHERE teacher.id = :teacherId")
     List<TeacherStudyProgramSubjectModel> getTeacherStudyProgramSubjectModel(@Param("teacherId") Long teacherId);
 
-
+    Optional<TeacherSubject> findByTeacherAndSchoolClassAndStudyProgramSubject(Teacher teacher,SchoolClass schoolClass,StudyProgramSubject studyProgramSubject);
 }

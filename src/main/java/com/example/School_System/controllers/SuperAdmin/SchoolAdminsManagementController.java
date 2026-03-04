@@ -43,7 +43,7 @@ public class SchoolAdminsManagementController {
     }
 
     @GetMapping("/{adminId}")
-    public ResponseEntity<?> getAdminDetails(@PathVariable Long adminId){
+    public ResponseEntity<SchoolAdminDetailsResponse> getAdminDetails(@PathVariable Long adminId){
         SchoolAdminDetailsResponse response =  schoolAdminService.getAdminDetails(adminId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

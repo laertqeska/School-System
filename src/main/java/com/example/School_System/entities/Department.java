@@ -1,10 +1,9 @@
 package com.example.School_System.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "departments")
-@Filter(name = "deletedFilter",condition = "is_deleted = isDeleted")
+@Filter(name = "deletedFilter",condition = "is_deleted = :isDeleted")
 public class Department extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,7 @@ public class Department extends SoftDeletableEntity{
     private String name;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_head_id",nullable = false,
+    @JoinColumn(name = "department_head_id",
         foreignKey = @ForeignKey(name = "fk_department_head")
     )
     private Teacher departmentHead;

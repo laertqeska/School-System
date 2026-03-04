@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 public class AcademicYearService {
     private final AcademicYearRepository academicYearRepository;
     private final SchoolAdminRepository schoolAdminRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
 
-    public AcademicYearService(AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository, UserContextService userContextService) {
+    public AcademicYearService(AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository, SchoolContextService schoolContextService) {
         this.academicYearRepository = academicYearRepository;
         this.schoolAdminRepository = schoolAdminRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public class AcademicYearService {
 
     @Transactional
     public void activateAcademicYear(User loggedUser,Long academicYearId){
-        School school = userContextService.resolveSchool(loggedUser);
+        School school = schoolContextService.resolveSchool(loggedUser);
         AcademicYear newCurrentAcademicYear = academicYearRepository.findById(academicYearId)
                 .orElseThrow(()->new EntityNotFoundException("Academic year not found for ID: " + academicYearId));
         if(!newCurrentAcademicYear.getSchool().getId().equals(school.getId())){

@@ -6,7 +6,6 @@ import com.example.School_System.entities.*;
 import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,15 +17,15 @@ public class SchoolClassService {
     private final StudyProgramRepository studyProgramRepository;
     private final AcademicYearRepository academicYearRepository;
     private final SchoolAdminRepository schoolAdminRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
 
-    public SchoolClassService(SchoolClassRepository schoolClassRepository, TeacherRepository teacherRepository, StudyProgramRepository studyProgramRepository, AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository, UserContextService userContextService) {
+    public SchoolClassService(SchoolClassRepository schoolClassRepository, TeacherRepository teacherRepository, StudyProgramRepository studyProgramRepository, AcademicYearRepository academicYearRepository, SchoolAdminRepository schoolAdminRepository, SchoolContextService schoolContextService) {
         this.schoolClassRepository = schoolClassRepository;
         this.teacherRepository = teacherRepository;
         this.studyProgramRepository = studyProgramRepository;
         this.academicYearRepository = academicYearRepository;
         this.schoolAdminRepository = schoolAdminRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
     }
 
     public List<TeacherClassesModel> getClassesForTeacher(User loggedUser){
@@ -38,7 +37,7 @@ public class SchoolClassService {
         if(!dean.isDean()){
             throw new AccessDeniedException("Only deans can create classes!");
         }
-        School school = userContextService.resolveSchool(dean);
+        School school = schoolContextService.resolveSchool(dean);
         Long schoolId = school.getId();
         StudyProgram studyProgram =  studyProgramRepository.findById(request.getStudyProgramId())
                 .orElseThrow(()-> new EntityNotFoundException("StudyProgram not found with ID: " + request.getStudyProgramId()));

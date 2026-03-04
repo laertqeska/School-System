@@ -3,18 +3,28 @@ package com.example.School_System.dto.teacher;
 import com.example.School_System.entities.valueObjects.AcademicTitle;
 
 public class TeacherModel {
+    private Long teacherId;
     private String firstName;
     private String lastName;
     private String email;
     private String departmentName;
     private AcademicTitle academicTitle;
 
-    public TeacherModel(String firstName,String lastName,String email,String departmentName,AcademicTitle academicTitle) {
+    public TeacherModel(Long teacherId,String firstName,String lastName,String email,String departmentName,AcademicTitle academicTitle) {
+        this.teacherId = teacherId;
         this.academicTitle = academicTitle;
         this.departmentName = departmentName;
         this.email = email;
         this.lastName = lastName;
         this.firstName = firstName;
+    }
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
     }
 
     public String getFirstName() {

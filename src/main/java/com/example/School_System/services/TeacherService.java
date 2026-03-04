@@ -13,11 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -31,9 +28,9 @@ public class TeacherService {
     private final StudyProgramSubjectRepository studyProgramSubjectRepository;
     private final TeacherSubjectRepository teacherSubjectRepository;
     private final UserRepository userRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
 
-    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, TeacherSubjectRepository teacherSubjectRepository, UserRepository userRepository, UserContextService userContextService) {
+    public TeacherService(TeacherRepository teacherRepository, SubjectRepository subjectRepository, SchoolClassRepository schoolClassRepository, SchoolAdminRepository schoolAdminRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, TeacherSubjectRepository teacherSubjectRepository, UserRepository userRepository, SchoolContextService schoolContextService) {
         this.teacherRepository = teacherRepository;
         this.subjectRepository = subjectRepository;
         this.schoolClassRepository = schoolClassRepository;
@@ -41,7 +38,7 @@ public class TeacherService {
         this.studyProgramSubjectRepository = studyProgramSubjectRepository;
         this.teacherSubjectRepository = teacherSubjectRepository;
         this.userRepository = userRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
     }
 
     public PaginatedTeacherResponse listTeachers(User loggedUser, int page, int perPage, String search){
@@ -51,9 +48,10 @@ public class TeacherService {
         Long schoolId = schoolAdmin.getSchool().getId();
         if(page > 0) page--;
         Pageable pageable = PageRequest.of(page,perPage);
-        if(search == null || search.isEmpty()){
-            search = null;
+        if(search == null || search.isBlank()){
+            search = "";
         }
+        else search = search.toLowerCase();
 
         Page<TeacherModel> teacherModelsPage = teacherRepository.findTeachersWithSearch(search,schoolId,pageable);
 
@@ -114,7 +112,7 @@ public class TeacherService {
         if (teacherToDelete.getDeleted()) {
             throw new IllegalStateException("Teacher already deleted");
         }
-        School school = userContextService.resolveSchool(loggedUser);
+        School school = schoolContextService.resolveSchool(loggedUser);
         if(!school.getId().equals(teacherToDelete.getSchool().getId())){
             throw new AccessDeniedException("You do not have permission to delete this teacher!");
         }

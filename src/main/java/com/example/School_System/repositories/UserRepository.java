@@ -1,10 +1,7 @@
 package com.example.School_System.repositories;
 
-import com.example.School_System.entities.School;
 import com.example.School_System.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,6 +16,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
+
+    boolean existsByEmailAndIsDeletedFalse(String email);
+
+    boolean existsByUsernameAndIsDeletedFalse(String username);
 
     List<User> findByIsActiveTrue();
 }

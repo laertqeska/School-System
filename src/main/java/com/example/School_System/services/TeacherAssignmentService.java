@@ -14,21 +14,21 @@ public class TeacherAssignmentService {
     private final SchoolClassRepository schoolClassRepository;
     private final StudyProgramSubjectRepository studyProgramSubjectRepository;
     private final AcademicYearRepository academicYearRepository;
-    private UserContextService userContextService;
+    private SchoolContextService schoolContextService;
 
 
-    public TeacherAssignmentService(TeacherSubjectRepository teacherSubjectRepository, TeacherRepository teacherRepository, SchoolClassRepository schoolClassRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, AcademicYearRepository academicYearRepository, UserContextService userContextService) {
+    public TeacherAssignmentService(TeacherSubjectRepository teacherSubjectRepository, TeacherRepository teacherRepository, SchoolClassRepository schoolClassRepository, StudyProgramSubjectRepository studyProgramSubjectRepository, AcademicYearRepository academicYearRepository, SchoolContextService schoolContextService) {
         this.teacherSubjectRepository = teacherSubjectRepository;
         this.teacherRepository = teacherRepository;
         this.schoolClassRepository = schoolClassRepository;
         this.studyProgramSubjectRepository = studyProgramSubjectRepository;
         this.academicYearRepository = academicYearRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
     }
 
     @Transactional
     public void assignTeacherToSubjectAndClass(AssignTeacherToClassAndSubjectRequest request, User loggedUser){
-        School school = userContextService.resolveSchool(loggedUser);
+        School school = schoolContextService.resolveSchool(loggedUser);
         Long teacherId = request.getTeacherId();
         Long schoolClassId = request.getSchoolClassId();
         Long studyProgramSubjectId = request.getStudyProgramSubjectId();

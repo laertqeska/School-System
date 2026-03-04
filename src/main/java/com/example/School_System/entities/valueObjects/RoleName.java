@@ -5,6 +5,7 @@ public enum RoleName {
     RECTOR,
     SCHOOL_ADMIN,
     DEAN,
+    DEPARTMENT_HEAD,
     TEACHER,
     STUDENT
 }

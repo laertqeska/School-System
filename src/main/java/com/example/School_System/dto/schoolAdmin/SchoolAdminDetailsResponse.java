@@ -15,4 +15,23 @@ public class SchoolAdminDetailsResponse {
         this.schoolName = schoolName;
     }
 
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
 }

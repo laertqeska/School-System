@@ -46,7 +46,7 @@ public interface StudyProgramRepository extends JpaRepository<StudyProgram,Long>
             "JOIN sp.department d " +
             "WHERE d.faculty.school.id = :schoolId " +
             "AND (:departmentId IS NULL OR d.id = :departmentId) " +
-            "AND (:studyProgramName IS NULL OR LOWER(sp.name) LIKE LOWER(CONCAT('%',:studyProgramName,'%'))) " +
+            "AND (LOWER(sp.name) LIKE LOWER(CONCAT('%',:studyProgramName,'%'))) " +
             "AND (:degreeLevel IS NULL OR sp.degreeLevel = :degreeLevel)")
     Page<StudyProgramModel> getStudyProgramModelsForSchool(Pageable pageable,@Param("schoolId") Long schoolId,@Param("departmentId") Long departmentId,@Param("studyProgramName") String studyProgramName,@Param("degreeLevel") DegreeLevel degreeLevel);
 }

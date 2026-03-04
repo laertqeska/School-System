@@ -1,5 +1,6 @@
 package com.example.School_System.controllers.Rector;
 
+import com.example.School_System.dto.invitation.CreateAndSendDeanInvitationResponse;
 import com.example.School_System.dto.rector.RectorInviteDeanRequest;
 import com.example.School_System.entities.User;
 import com.example.School_System.services.AuthorizationService;
@@ -25,10 +26,10 @@ public class RectorDeanController {
     }
 
     @PostMapping
-    public ResponseEntity<String> inviteDean(@RequestBody RectorInviteDeanRequest request){
+    public ResponseEntity<CreateAndSendDeanInvitationResponse> inviteDean(@RequestBody RectorInviteDeanRequest request){
         User loggedUser = authorizationService.getCurrentUser();
-        String invitationToken = rectorService.createAndSendDeanInvitation(request,loggedUser);
-        return new ResponseEntity<>(invitationToken, HttpStatus.OK);
+        CreateAndSendDeanInvitationResponse response = rectorService.createAndSendDeanInvitation(request,loggedUser);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

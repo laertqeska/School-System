@@ -15,11 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-// TODO: Extract subject assignment into dedicated service and expose endpoint for post-creation assignments
-
 @Transactional
 @Service
 public class TeacherEnrollmentService {
+
     private final SchoolRepository schoolRepository;
     private final UserRepository userRepository;
     private final TeacherRepository teacherRepository;

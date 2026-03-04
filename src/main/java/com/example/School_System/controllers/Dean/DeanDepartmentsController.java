@@ -5,6 +5,7 @@ import com.example.School_System.dto.department.DepartmentModelResponse;
 import com.example.School_System.entities.User;
 import com.example.School_System.services.AuthorizationService;
 import com.example.School_System.services.DepartmentService;
+import com.example.School_System.services.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,13 @@ public class DeanDepartmentsController {
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long departmentId){
         User user = authorizationService.getCurrentUser();
         departmentService.deleteDepartment(user,departmentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{departmentId}/teachers/{teacherId}")
+    public ResponseEntity<Void> assignDepartmentHead(@PathVariable Long departmentId,@PathVariable Long teacherId){
+        User user = authorizationService.getCurrentUser();
+        departmentService.assignDepartmentHead(user,departmentId,teacherId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -2,15 +2,14 @@ package com.example.School_System.entities;
 
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.UpdateTimestamp;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "buildings")
-@Filter(name = "deletedFilter",condition = "is_deleted = isDeleted")
+@Filter(name = "deletedFilter",condition = "is_deleted = :isDeleted")
 public class Building extends SoftDeletableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +32,15 @@ public class Building extends SoftDeletableEntity{
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Building(Faculty faculty,String buildingName,String buildingCode){
+        this.faculty = faculty;
+        this.buildingName = buildingName;
+        this.buildingCode = buildingCode;
+    }
+
+    public Building() {
+    }
 
     public Long getId() {
         return id;

@@ -1,5 +1,6 @@
 package com.example.School_System.services;
 
+import com.example.School_System.dto.invitation.CreateAndSendDeanInvitationResponse;
 import com.example.School_System.dto.rector.*;
 import com.example.School_System.entities.*;
 import com.example.School_System.entities.valueObjects.ApprovalStatus;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,16 +22,16 @@ public class RectorService {
     private final EmailService emailService;
     private final DeanInvitationRepository deanInvitationRepository;
     private final RectorRepository rectorRepository;
-    private final UserContextService userContextService;
+    private final SchoolContextService schoolContextService;
 
-    public RectorService(FacultyRepository facultyRepository, SchoolRepository schoolRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, EmailService emailService, DeanInvitationRepository deanInvitationRepository, RectorRepository rectorRepository, UserContextService userContextService){
+    public RectorService(FacultyRepository facultyRepository, SchoolRepository schoolRepository, FacultyApprovalTokenRepository facultyApprovalTokenRepository, EmailService emailService, DeanInvitationRepository deanInvitationRepository, RectorRepository rectorRepository, SchoolContextService schoolContextService){
         this.facultyRepository = facultyRepository;
         this.schoolRepository = schoolRepository;
         this.facultyApprovalTokenRepository = facultyApprovalTokenRepository;
         this.emailService = emailService;
         this.deanInvitationRepository = deanInvitationRepository;
         this.rectorRepository = rectorRepository;
-        this.userContextService = userContextService;
+        this.schoolContextService = schoolContextService;
     }
 
     public PaginatedRectorFacultiesResponse getFacultiesForRector(User rector,int page, int perPage){
@@ -86,7 +86,7 @@ public class RectorService {
     }
 
 
-    public String createAndSendDeanInvitation(RectorInviteDeanRequest request,User loggedUser){
+    public CreateAndSendDeanInvitationResponse createAndSendDeanInvitation(RectorInviteDeanRequest request,User loggedUser){
         Long facultyId = request.getFacultyId();
         String deanEmail = request.getDeanEmail();
         boolean pendingEmailAlreadyExists  = deanInvitationRepository.existsByDeanEmailAndStatus(deanEmail, InvitationStatus.PENDING);
@@ -94,7 +94,7 @@ public class RectorService {
             throw new IllegalStateException("Invitation already sent to this email!");
         }
         Faculty faculty = facultyRepository.findById(facultyId).orElseThrow(() -> new EntityNotFoundException("Faculty not found for ID: " + facultyId));
-        School school = userContextService.resolveSchool(loggedUser);
+        School school = schoolContextService.resolveSchool(loggedUser);
         if(!faculty.getSchool().getId().equals(school.getId())){
             throw new AccessDeniedException("Faculty does not belong to your school!!!");
         }
@@ -106,7 +106,7 @@ public class RectorService {
         );
         DeanInvitation savedInvitation = deanInvitationRepository.save(deanInvitation);
         emailService.sendDeanInvitation(deanInvitation);
-        return savedInvitation.getInvitationToken();
+        return new CreateAndSendDeanInvitationResponse(savedInvitation.getInvitationToken());
     }
 
     public PaginatedRectorResponse getRectors(int page,int perPage,User superAdmin,String search){

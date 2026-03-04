@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "teacher_study_program_subjects",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"teacher_id", "subject_id", "class_id", "academic_year_id"}))
+        uniqueConstraints = @UniqueConstraint(columnNames = {"teacher_id", "study_program_subject_id", "class_id", "academic_year_id"}))
 public class TeacherSubject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

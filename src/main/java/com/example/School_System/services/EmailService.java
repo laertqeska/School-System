@@ -4,6 +4,7 @@ import com.example.School_System.entities.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -22,6 +23,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
+    @Async
     public void sendRectorInvitation(RectorInvitation rectorInvitation){
         String invitationLink = frontendUrl + "/rector-registration.html?token=" + rectorInvitation.getInvitationToken();
 
@@ -52,6 +54,7 @@ public class EmailService {
         sendSimpleEmail(rectorInvitation.getRectorEmail(),subject,body);
     }
 
+    @Async
     public void sendFacultyApproval(FacultyApprovalToken facultyApprovalToken){
         String approvalLink = frontendUrl + "/rector/faculty-approval/" + facultyApprovalToken.getToken();
         String rejectionLInk = frontendUrl + "/rector/faculty-rejection/" + facultyApprovalToken.getToken();
@@ -93,6 +96,7 @@ public class EmailService {
         sendSimpleEmail(rector.getEmail(),subject,body);
     }
 
+    @Async
     public void sendDeanInvitation(DeanInvitation deanInvitation){
         String facultyName = deanInvitation.getFaculty().getName();
         String invitationLink =  frontendUrl + "/dean-registration.html?token=" + deanInvitation.getInvitationToken();

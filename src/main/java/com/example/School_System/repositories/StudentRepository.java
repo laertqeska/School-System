@@ -2,6 +2,7 @@ package com.example.School_System.repositories;
 
 import com.example.School_System.dto.student.StudentModel;
 import com.example.School_System.entities.School;
+import com.example.School_System.entities.SchoolClass;
 import com.example.School_System.entities.Student;
 import com.example.School_System.entities.valueObjects.StudentStatus;
 import org.springframework.data.domain.Page;
@@ -56,4 +57,6 @@ public interface StudentRepository extends JpaRepository<Student,Long> {
             "JOIN s.school school " +
             "WHERE user.id = :userId")
     Optional<School> findSchoolForStudent(@Param("userId") Long userId);
+
+    List<Student> findAllBySchoolClass_AndIsDeletedFalse(SchoolClass schoolClass);
 }
