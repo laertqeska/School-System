@@ -1,14 +1,15 @@
 package com.example.School_System.services;
 
-import com.example.School_System.dto.attendance.StudentAttendanceModel;
-import com.example.School_System.dto.attendance.StudentIdAttendanceModel;
-import com.example.School_System.dto.attendance.TakeAttendanceRequest;
+import com.example.School_System.dto.attendance.*;
 import com.example.School_System.entities.*;
 import com.example.School_System.entities.valueObjects.AttendanceStatus;
 import com.example.School_System.entities.valueObjects.SessionStatus;
 import com.example.School_System.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +28,9 @@ public class AttendanceService {
     private final ScheduleRepository scheduleRepository;
     private final ClassroomRepository classroomRepository;
     private final SchoolClassRepository schoolClassRepository;
+    private final TeacherRepository teacherRepository;
 
-    public AttendanceService(AttendanceRecordRepository attendanceRecordRepository, ClassSessionRepository classSessionRepository, TeacherSubjectRepository teacherSubjectRepository, StudentRepository studentRepository, ScheduleRepository scheduleRepository, ClassroomRepository classroomRepository, SchoolClassRepository schoolClassRepository) {
+    public AttendanceService(AttendanceRecordRepository attendanceRecordRepository, ClassSessionRepository classSessionRepository, TeacherSubjectRepository teacherSubjectRepository, StudentRepository studentRepository, ScheduleRepository scheduleRepository, ClassroomRepository classroomRepository, SchoolClassRepository schoolClassRepository, TeacherRepository teacherRepository) {
         this.attendanceRecordRepository = attendanceRecordRepository;
         this.classSessionRepository = classSessionRepository;
         this.teacherSubjectRepository = teacherSubjectRepository;
@@ -36,6 +38,7 @@ public class AttendanceService {
         this.scheduleRepository = scheduleRepository;
         this.classroomRepository = classroomRepository;
         this.schoolClassRepository = schoolClassRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     @Transactional
@@ -60,6 +63,12 @@ public class AttendanceService {
         LocalTime endTime = request.getEndTime() != null ? request.getEndTime() : schedule.getEndTime();
         LocalDate sessionDate = request.getSessionDate();
 
+        boolean attendanceExists = classSessionRepository.existsByScheduleAndSessionDate(schedule,sessionDate);
+
+        if(attendanceExists){
+            throw new IllegalStateException("Attendance has already been taken for this session");
+        }
+
         ClassSession classSession = new ClassSession(
                 schedule,
                 sessionDate,
@@ -74,32 +83,35 @@ public class AttendanceService {
 
         List<Student> studentList = studentRepository.findAllBySchoolClass_AndIsDeletedFalse(schoolClass);
 
-        List<StudentAttendanceModel> studentAttendanceList = validateStudents(request.getStudentAttendance(),studentList);
+        List<StudentAttendanceStatusModel> studentAttendanceList = validateStudents(request.getStudentAttendance(),studentList);
 
-        for(StudentAttendanceModel studentAttendance : studentAttendanceList){
+        List<AttendanceRecord> attendanceRecords = new ArrayList<>();
+
+        for(StudentAttendanceStatusModel studentAttendance : studentAttendanceList){
             AttendanceRecord attendanceRecord = new AttendanceRecord(
                     studentAttendance.getStudent(),
                     classSession,
                     studentAttendance.getAttendanceStatus(),
                     loggedUser
             );
-            attendanceRecordRepository.save(attendanceRecord);
+            attendanceRecords.add(attendanceRecord);
         }
+        attendanceRecordRepository.saveAll(attendanceRecords);
     }
 
-    public List<StudentAttendanceModel> validateStudents(List<StudentIdAttendanceModel> studentAttendance, List<Student> studentList){
+    public List<StudentAttendanceStatusModel> validateStudents(List<StudentIdAttendanceStatusModel> studentAttendance, List<Student> studentList){
         if(studentList.size() != studentAttendance.size()){
             throw new IllegalArgumentException("Attendance must include all students of the class.");
         }
-        studentAttendance.sort(Comparator.comparing(StudentIdAttendanceModel::getId));
+        studentAttendance.sort(Comparator.comparing(StudentIdAttendanceStatusModel::getId));
         studentList.sort(Comparator.comparing(Student::getId));
-        List<StudentAttendanceModel> studentAttendanceList = new ArrayList<>();
+        List<StudentAttendanceStatusModel> studentAttendanceList = new ArrayList<>();
         for(int i = 0;i<studentList.size();i++){
             AttendanceStatus attendanceStatus = studentAttendance.get(i).getStatus();
             if(!studentList.get(i).getId().equals(studentAttendance.get(i).getId())){
                 throw new IllegalStateException("Student does not belong to this class: " + studentAttendance.get(i).getId());
             }
-            StudentAttendanceModel studentAttendanceModel = new StudentAttendanceModel(
+            StudentAttendanceStatusModel studentAttendanceModel = new StudentAttendanceStatusModel(
                     studentList.get(i),
                     attendanceStatus
             );
@@ -107,6 +119,30 @@ public class AttendanceService {
         }
         return studentAttendanceList;
 
+    }
+
+    public PaginatedClassAttendanceResponse getAttendanceForClass(User loggedUser, Long classId,int page,int perPage){
+        if(page < 1){
+            page = 0;
+        }
+        else page--;
+        SchoolClass schoolClass = schoolClassRepository.findByIdAndIsDeletedFalse(classId)
+                .orElseThrow(()->new EntityNotFoundException("School class not found for id: " + classId));
+        Teacher teacher = teacherRepository.findByUserIdAndIsDeletedFalse(loggedUser.getId())
+                .orElseThrow(()-> new EntityNotFoundException("Teacher not found for user id: " + loggedUser.getId()));
+        boolean teacherTeachesSchoolClass = teacherSubjectRepository.existsByTeacherAndSchoolClass(teacher,schoolClass);
+        if(!teacherTeachesSchoolClass){
+            throw new AccessDeniedException("Teacher does not teach to this class");
+        }
+        Pageable pageable = PageRequest.of(page,perPage);
+        Page<StudentAttendanceModel> studentAttendancePage = attendanceRecordRepository.getAttendanceForClass(classId,AttendanceStatus.ABSENT,pageable);
+        return new PaginatedClassAttendanceResponse(
+                studentAttendancePage.getContent(),
+                page + 1,
+                perPage,
+                studentAttendancePage.getTotalElements(),
+                studentAttendancePage.getTotalPages()
+        );
     }
 
 }

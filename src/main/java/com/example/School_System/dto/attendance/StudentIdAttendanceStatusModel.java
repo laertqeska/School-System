@@ -2,11 +2,11 @@ package com.example.School_System.dto.attendance;
 
 import com.example.School_System.entities.valueObjects.AttendanceStatus;
 
-public class StudentIdAttendanceModel {
+public class StudentIdAttendanceStatusModel {
     private Long id;
     private AttendanceStatus status;
 
-    public StudentIdAttendanceModel() {
+    public StudentIdAttendanceStatusModel() {
     }
 
     public Long getId() {

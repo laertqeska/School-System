@@ -13,7 +13,7 @@ public class TakeAttendanceRequest {
     @NotNull
     private Long schoolClassId;
     @NotNull
-    private List<StudentIdAttendanceModel> studentAttendance;
+    private List<StudentIdAttendanceStatusModel> studentAttendance;
     @NotBlank
     private String topic;
     private Long classroomId;
@@ -42,11 +42,11 @@ public class TakeAttendanceRequest {
         this.schoolClassId = schoolClassId;
     }
 
-    public List<StudentIdAttendanceModel> getStudentAttendance() {
+    public List<StudentIdAttendanceStatusModel> getStudentAttendance() {
         return studentAttendance;
     }
 
-    public void setStudentAttendance(List<StudentIdAttendanceModel> studentAttendance) {
+    public void setStudentAttendance(List<StudentIdAttendanceStatusModel> studentAttendance) {
         this.studentAttendance = studentAttendance;
     }
 
